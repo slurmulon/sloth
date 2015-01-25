@@ -1,3 +1,5 @@
+// http://golang.org/pkg/net/http/
+
 package sloth
 
 import (
@@ -17,14 +19,6 @@ const (
 
 // Ensures type checking during json marshalling
 var _ json.Marshaler = (*RawMessage)(nil)
-
-// type RestRequest struct {
-//   *http.Request
-// }
-
-// type RestResponse struct {
-//   *http.Response
-// }
 
 type RestResponse (int, interface{})
 
@@ -118,7 +112,7 @@ type RestResource interface {
 // default GET (remove eventually)
 func (resource *RestResource) Get(values url.Values) RestResponse {
   data := map[string]string{"hello": "world"}
-  return 200, data
+  return StatusOK, data
 }
 
 type RestAPI interface {
