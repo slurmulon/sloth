@@ -1,4 +1,4 @@
-package gotser
+package sloth
 
 import (
   "time"

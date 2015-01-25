@@ -1,4 +1,4 @@
-package gotser
+package sloth
 
 import (
   "encoding/json"
@@ -22,9 +22,14 @@ type RestRequest struct {
   *http.Request
 }
 
-func (req * RestRequest) IpAddress() string {
-  return strings.Split(req.RemoteAddr, ":")[0]
+type RestResponse struct {
+  *http.Response
 }
+
+
+// func (req * RestRequest) IpAddress() string {
+//   return strings.Split(req.RemoteAddr, ":")[0]
+// }
 
 type RestError interface {
   Error() string
@@ -34,7 +39,6 @@ type Service interface {
   uri, contentType, string
 
   MarshalContent(data)
-  auth Auth 
 }
 
 func (service *Service) MarshalContent(data) {

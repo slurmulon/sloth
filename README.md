@@ -1,2 +1,2 @@
-# gotser
-RESTful Web APIs in Go
+# Sloth
+RESTful Web API framework with support for Webhooks in Go
