@@ -26,11 +26,6 @@ type RestResponse struct {
   *http.Response
 }
 
-
-// func (req * RestRequest) IpAddress() string {
-//   return strings.Split(req.RemoteAddr, ":")[0]
-// }
-
 type RestError interface {
   Error() string
 }
@@ -109,16 +104,16 @@ type Resource interface {
   Post(values url.Values)   (int, interface{})
   Put(values url.Values)    (int, interface{})
   Delete(values url.Values) (int, interface{})
+
+  // TODO - model?
 }
 
 type RestResource interface {
   Resource
 
-  all()    (int, interface{})
-  byId(id) (int, interface{})
-  follow() (int, interface{})
-
-  // TODO - automatic support for hooks
+  all()    RestResource
+  byId(id) RestResource
+  follow() RestResource
 }
 
 type RestAPI interface {

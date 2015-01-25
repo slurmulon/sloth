@@ -1,4 +1,3 @@
-// TODO - rest hooks!
 // TODO - hmac
 
 package sloth
@@ -7,28 +6,26 @@ import (
   "time"
 )
 
-type RestHookResource interface {
-  RestResource
-
-  subscribe() RestHook // new rest hook from resource (might want to return response, not RestHook)
-}
-
 type RestHook struct {
-  subscriberUrl string
+  subscriberUrl, subscriberMethod string
 
-  // Confirm(key) (string, error)
-  Broadcast(data) (string, error)
   Kill() (string, error)
 }
 
-func (hookSub *RestHook) Confirm(key) (string, error) {
+type RestHookResource interface {
+  RestResource
 
+  hooks: []RestHook
+
+  Subscribe() RestHook // new rest hook from resource (might want to return response, not RestHook)
+  Broadcast(data)
 }
 
-func (hookSub *RestHook) Broadcast(data) (string, error) {
-  
+func (resource *RestHookResource) Broadcast(data) {
+  // for each hook
+  //    find their preferred method, then do it
 }
 
-func ( hookSub *RestHook) Kill() (string, error) {
+func (hookSub *RestHook) Kill() {
   
 }
