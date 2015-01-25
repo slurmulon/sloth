@@ -18,13 +18,15 @@ const (
 // Ensures type checking during json marshalling
 var _ json.Marshaler = (*RawMessage)(nil)
 
-type RestRequest struct {
-  *http.Request
-}
+// type RestRequest struct {
+//   *http.Request
+// }
 
-type RestResponse struct {
-  *http.Response
-}
+// type RestResponse struct {
+//   *http.Response
+// }
+
+type RestResponse (int, interface{})
 
 type RestError interface {
   Error() string
@@ -33,7 +35,9 @@ type RestError interface {
 type Service interface {
   uri, contentType, string
 
+  // FIXME - move to resource level for greater flexibility
   MarshalContent(data)
+  RequestHandler(resource RestResource) http.HandlerFunc
 }
 
 func (service *Service) MarshalContent(data) {
@@ -50,7 +54,7 @@ func (service *JsonService) MarshalContent(data) {
   return json.Marshal(data)
 }
 
-func (service *Service) requestHandler(resource Resource) http.HandlerFunc {
+func (service *Service) RequestHandler(resource RestResource) http.HandlerFunc {
   return func(rw http.ResponseWriter, request *http.Request) {
     var data interface{}
     var code int
@@ -85,7 +89,7 @@ func (service *Service) requestHandler(resource Resource) http.HandlerFunc {
   }
 }
 
-func (service *Service) AddResource(resource Resource, path string) {
+func (service *Service) AddResource(resource RestResource, path string) {
   http.HandleFunc(path, service.requestHandler(resource))
 }
 
@@ -99,21 +103,22 @@ func (service *Service) Abort(rw http.ResponseWriter, statusCode int) {
   rw.WriteHeader(statusCode)
 }
 
-type Resource interface {
-  Get(values url.Values)    (int, interface{})
-  Post(values url.Values)   (int, interface{})
-  Put(values url.Values)    (int, interface{})
-  Delete(values url.Values) (int, interface{})
-
-  // TODO - model?
-}
-
 type RestResource interface {
-  Resource
+  baseUrl string
+
+  Get(values url.Values)    RestResponse
+  Post(values url.Values)   RestResponse
+  Put(values url.Values)    RestResponse
+  Delete(values url.Values) RestResponse
 
   all()    RestResource
   byId(id) RestResource
-  follow() RestResource
+}
+
+// default GET (remove eventually)
+func (resource *RestResource) Get(values url.Values) RestResponse {
+  data := map[string]string{"hello": "world"}
+  return 200, data
 }
 
 type RestAPI interface {
