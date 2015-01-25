@@ -18,8 +18,16 @@ const (
 // Ensures type checking during json marshalling
 var _ json.Marshaler = (*RawMessage)(nil)
 
+type RestRequest struct {
+  *http.Request
+}
+
+func (req * RestRequest) IpAddress() string {
+  return strings.Split(req.RemoteAddr, ":")[0]
+}
+
 type RestError interface {
-    Error() string
+  Error() string
 }
 
 type Service interface {
@@ -29,7 +37,7 @@ type Service interface {
   auth Auth 
 }
 
-func (service *JsonService) MarshalContent(data) {
+func (service *Service) MarshalContent(data) {
   return data
 }
 
@@ -93,20 +101,24 @@ func (service *Service) Abort(rw http.ResponseWriter, statusCode int) {
 }
 
 type Resource interface {
-  Get(values url.Values) (int, interface{})
-  Post(values url.Values) (int, interface{})
-  Put(values url.Values) (int, interface{})
+  Get(values url.Values)    (int, interface{})
+  Post(values url.Values)   (int, interface{})
+  Put(values url.Values)    (int, interface{})
   Delete(values url.Values) (int, interface{})
 }
 
-type RestfulResource interface {
+type RestResource interface {
   Resource
 
-  all()
-  byId(id)
-  follow()
+  all()    (int, interface{})
+  byId(id) (int, interface{})
+  follow() (int, interface{})
+
+  // TODO - automatic support for hooks
 }
 
-type RestfulResponse struct {
-    // TODO
+type RestAPI interface {
+  host, base string
+
+  resources []RestResource
 }
