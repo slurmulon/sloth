@@ -2,30 +2,36 @@
 
 package sloth
 
-import (
-  "time"
-)
+// var _ RestfulHook = (*RestfulHookResource)(nil)
+// var _ RestfulHookResource = (*RestHookResource)(nil)
 
-// TODO - make persistable
-type RestHook struct {
-  subscriberUrl string
-
+type RestfulHook interface {
   Kill() (string, error) // rename Unsubscribe?
 }
 
-type RestHookResource interface {
-  RestResource
-
-  Hooks []RestHook
+type RestfulHookResource interface {
+  RestfulResource
 
   Subscribe(subUrl string, subMethod string)
-  Broadcast(data)
+  Broadcast(data interface{})
+}
+
+// TODO - make persistable
+type RestHook struct {
+  subscriberUrl    string
+  subscriberMethod string
+}
+
+type RestHookResource struct {
+  *RestResource
+
+  Hooks []RestHook
 }
 
 func (resource *RestHookResource) Subscribe(subUrl string, subMethod string) {
   hooks.push(&RestHook {
     subscriberUrl    : subUrl,
-    subscriberMethod : subMethod
+    subscriberMethod : subMethod,
   })
 }
 

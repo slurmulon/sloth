@@ -1,15 +1,17 @@
 package sloth
 
+import (
+  "encoding/json"
+)
 // Ensures type checking during json marshalling
-var _ json.Marshaler = (*RawMessage)(nil)
+// var _ json.Marshaler = (*RawMessage)(nil)
 
-type JsonRestService interface {
-  // contentType := 'application/json' // can do?
-  RestService
+type JsonRestService struct {
+  *RestService
 }
 
-type JsonRestResource interface {
-  RestResource
+type JsonRestResource struct {
+  *RestResource
 }
 
 func (service *JsonRestService) MarshalContent(data) {

@@ -3,15 +3,14 @@
 package sloth
 
 import (
-  "encoding/json"
   "fmt"
   "net/http"
   "net/url"
-  "time"
+  // "time"
 )
 
-type RestRequest  (int, interface{})
-type RestResponse (int, interface{})
+// type RestRequest  (int, interface{})
+// type RestResponse (int, interface{})
 
 type RestError interface {
   Error() string
@@ -27,38 +26,42 @@ const (
 )
 
 type Getable interface {
-  Get(values url.Values) RestResponse
+  Get(values url.Values) (int, interface{})
 }
 
 type Postable interface {
-  Post(values url.Values) RestResponse
+  Post(values url.Values) (int, interface{})
 }
 
 type Putable interface {
-  Put(values url.Values) RestResponse
+  Put(values url.Values) (int, interface{})
 }
 
 type Deletable interface {
-  Delete(values url.Values) RestResponse
+  Delete(values url.Values) (int, interface{})
 }
 
 // Resources
 
-type RestResource interface {
-  baseUrl string
+// var _ RestfulResource = (*RestResource)(nil)
 
-  all()    RestResource
-  byId(id) RestResource
+type RestfulResource interface {
+  all()    (int, interface{})
+  byId(int) (int, interface{})
 
-  MarshalContent(data)
+  MarshalContent(data interface{})
   RequestHandler() http.HandlerFunc
 }
 
-func (resource *RestResource) MarshalContent(data) {
+type RestResource struct {
+  baseUrl, contentType string
+}
+
+func (resource *RestResource) MarshalContent(data interface{}) {
   return data
 }
 
-type RestRequestInterceptor func(int, interface{}) RestRequest
+type RestRequestInterceptor func(int, interface{})
 
 func (resource *RestResource) RequestHandler(requestInterceptor RestRequestInterceptor) http.HandlerFunc {
   return func(rw http.ResponseWriter, request *http.Request) {
@@ -104,13 +107,13 @@ func (resource *RestResource) AbortRequest(rw http.ResponseWriter, statusCode in
 }
 
 // default GET (remove eventually)
-func (resource *RestResource) Get(values url.Values) RestResponse {
+func (resource *RestResource) Get(values url.Values) (int, interface{}) {
   data := map[string]string{"hello": "world"}
 
   return StatusOK, data
 }
 
-type RestAPI interface {
+type RestAPI struct {
   host, base string
 
   resources []RestResource
@@ -118,15 +121,18 @@ type RestAPI interface {
 
 // Services
 
-type RestService interface {
-  uri, string
+// var _ RestfulService = (*RestService)(nil)
 
-  // FIXME - move to resource level for greater flexibility, but allow here as well
-  MarshalContent(data)
+type RestfulService interface {
+  MarshalContent(data interface{})
   RequestHandler(resource RestResource) http.HandlerFunc
 }
 
-func (service *RestService) MarshalContent(data) {
+type RestService struct {
+  baseUri string
+}
+
+func (service *RestService) MarshalContent(data interface{}) {
   return data
 }
 

@@ -1,14 +1,12 @@
 package sloth
 
-import (
-  "time"
-)
+import "time"
 
 type AuthToken struct {
   token string
-  time Time
+  time time.Time
 }
 
 type OAuth2 interface {
-  Auth
+  // Auth
 }
