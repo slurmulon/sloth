@@ -23,14 +23,19 @@ var _ json.Marshaler = (*RawMessage)(nil)
 type RestRequest  (int, interface{})
 type RestResponse (int, interface{})
 
+// TODO - how can i just initialize the contentType variable...
+// type Jsonable struct {
+//   contentType := 'application/json'
+// }
+
 type RestError interface {
   Error() string
 }
 
 type Service interface {
-  uri, contentType, string
+  uri, string
 
-  // FIXME - move to resource level for greater flexibility
+  // FIXME - move to resource level for greater flexibility, but allow here as well
   MarshalContent(data)
   RequestHandler(resource RestResource) http.HandlerFunc
 }
@@ -39,11 +44,11 @@ func (service *Service) MarshalContent(data) {
   return data
 }
 
-type JsonService interface {
-  contentType := 'application/json'
+// type JsonService interface {
+//   contentType := 'application/json'
 
-  Service
-}
+//   Service
+// }
 
 func (service *JsonService) MarshalContent(data) {
   return json.Marshal(data)
@@ -84,9 +89,16 @@ type RestResource interface {
 
   all()    RestResource
   byId(id) RestResource
+
+  MarshalContent(data)
+  RequestHandler() http.HandlerFunc
 }
 
-type RestRequestFilter func(int, interface{}) RestRequest
+func (resource *RestResource) MarshalContent(data) {
+  return data
+}
+
+// type RestRequestFilter func(int, interface{}) RestRequest
 
 func (resource *RestResource) RequestHandler() http.HandlerFunc {
   return func(rw http.ResponseWriter, request *http.Request) {

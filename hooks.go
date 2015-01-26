@@ -32,6 +32,10 @@ func (resource *RestHookResource) Subscribe(subUrl string, subMethod string) {
 func (resource *RestHookResource) Broadcast(data) {
   for _, hook := range resource.Hooks {
     http.NewRequest(hook.subscriberMethod, hook.subscriberUrls, nil)
+    
+    // if err != nil {
+    //   // handle error
+    // }
   }
 }
 
