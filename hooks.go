@@ -10,7 +10,7 @@ import (
 type RestHook struct {
   subscriberUrl string
 
-  Kill() (string, error)
+  Kill() (string, error) // rename Unsubscribe?
 }
 
 type RestHookResource interface {
