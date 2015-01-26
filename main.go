@@ -1,7 +1,11 @@
 package sloth
 
 // intended syntax
-// gotser.Resource('quotes').byId('somsflkdj').Push()
+// sloth.Resource('quotes').byId('somsflkdj').Push()
+// &sloth.RestResource { 
+//   Getable
+//   Postable
+// }
 
 func init() {
   // TODO

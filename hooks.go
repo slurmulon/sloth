@@ -8,7 +8,7 @@ import (
 
 // TODO - make persistable
 type RestHook struct {
-  subscriberUrl, subscriberMethod string
+  subscriberUrl string
 
   Kill() (string, error)
 }
@@ -24,21 +24,14 @@ type RestHookResource interface {
 
 func (resource *RestHookResource) Subscribe(subUrl string, subMethod string) {
   hooks.push(&RestHook {
-    subscriberUrl    : subUrl
+    subscriberUrl    : subUrl,
     subscriberMethod : subMethod
   })
 }
 
 func (resource *RestHookResource) Broadcast(data) {
-  // for each hook
-  //    find their preferred method, then do it
   for _, hook := range resource.Hooks {
-    // create resource from url
-    subHookResource := new(Resource) {
-
-    }
-
-    // http.Get("http://example.com/")
+    http.NewRequest(hook.subscriberMethod, hook.subscriberUrls, nil)
   }
 }
 
