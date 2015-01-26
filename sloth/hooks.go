@@ -39,6 +39,6 @@ func (resource *RestHookResource) Broadcast(data) {
   }
 }
 
-func (hookSub *RestHook) Kill() {
+func (hook *RestHook) Kill() {
   
 }

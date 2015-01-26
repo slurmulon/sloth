@@ -1,4 +1,11 @@
-package sloth
+package main
+
+import (
+  "fmt"
+  "sloth"
+)
+
+// https://cloud.google.com/appengine/docs/go/gettingstarted/helloworld
 
 // intended syntax
 // sloth.Resource('quotes').byId('somsflkdj').Push()
@@ -7,6 +14,7 @@ package sloth
 //   Postable
 // }
 
-func init() {
+func main() {
   // TODO
+  fmt.Println('Sloth')
 }
