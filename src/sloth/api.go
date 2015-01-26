@@ -46,10 +46,10 @@ type Deletable interface {
 // var _ RestfulResource = (*RestResource)(nil)
 
 type RestfulResource interface {
-  all()    (int, interface{})
+  all()     (int, interface{})
   byId(int) (int, interface{})
 
-  MarshalContent(data interface{})
+  MarshalContent(interface{})
   RequestHandler() http.HandlerFunc
 }
 
@@ -72,7 +72,7 @@ func (resource *RestResource) RequestHandler(requestInterceptor RestRequestInter
     method := request.Method
     values := request.Form
 
-    // TODO - move this all 
+    // TODO - base on method interfaces (Getable, Postable) instead
     switch method {
     case GET:
       stat, data = resource.Get(values)
@@ -90,11 +90,11 @@ func (resource *RestResource) RequestHandler(requestInterceptor RestRequestInter
     // request filter TODO
     // requestInterceptor
 
-    content, err := service.MarshalContent(data)
+    content, err := resource.MarshalContent(data)
 
     if err != nil {
       // log - failed to marshal content
-      service.Abort(rw, 500)
+      resource.Abort(rw, 500)
     }
 
     rw.WriteHeader(stat)

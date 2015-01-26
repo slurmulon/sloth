@@ -2,11 +2,12 @@
 
 package sloth
 
-// var _ RestfulHook = (*RestfulHookResource)(nil)
-// var _ RestfulHookResource = (*RestHookResource)(nil)
+var _ RestfulHook = (*RestHook)(nil)
+var _ RestfulHookResource = (*RestHookResource)(nil)
 
 type RestfulHook interface {
-  Kill() (string, error) // rename Unsubscribe?
+  Ping()
+  Kill() // rename Unsubscribe?
 }
 
 type RestfulHookResource interface {
@@ -43,6 +44,10 @@ func (resource *RestHookResource) Broadcast(data) {
     //   // handle error
     // }
   }
+}
+
+func (hook *RestHook) Ping() {
+  
 }
 
 func (hook *RestHook) Kill() {
