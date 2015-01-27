@@ -15,10 +15,10 @@ type JsonRestResource struct {
   *RestResource
 }
 
-func (service *JsonRestService) MarshalContent(data interface{}) {
+func (service *JsonRestService) MarshalContent(data interface{}) ([]byte, error) {
   return json.Marshal(data)
 }
 
-func (resource *JsonRestResource) MarshalContent(data interface{}) {
+func (resource *JsonRestResource) MarshalContent(data interface{}) ([]byte, error) {
   return json.Marshal(data)
 }

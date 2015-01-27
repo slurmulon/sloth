@@ -6,6 +6,8 @@ import (
   "fmt"
   "net/http"
   "net/url"
+  "bytes"
+  "encoding/gob"
   // "time"
 )
 
@@ -14,6 +16,16 @@ import (
 
 type RestError interface {
   Error() string
+}
+
+func AsBytes(key interface{}) ([]byte, error) {
+  var buf bytes.Buffer
+  enc := gob.NewEncoder(&buf)
+  err := enc.Encode(key)
+  if err != nil {
+      return nil, err
+  }
+  return buf.Bytes(), nil
 }
 
 // Methods
@@ -47,7 +59,8 @@ type RestfulResource interface {
   all()     (int, interface{})
   byId(int) (int, interface{})
 
-  MarshalContent(data interface{}) (interface{}, interface{}) 
+  //MarshalContent(data interface{}) (interface{}, interface{}) 
+  MarshalContent(data interface{}) ([]byte, error)
   RequestHandler() http.HandlerFunc
 }
 
@@ -55,8 +68,8 @@ type RestResource struct {
   baseUrl, contentType string
 }
 
-func (resource *RestResource) MarshalContent(data interface{}) (interface{}, interface{}) {
-  return data, nil
+func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {//(interface{}, interface{}) {
+  return AsBytes(data)
 }
 
 // type RestRequestInterceptor func(int, interface{})
@@ -97,8 +110,8 @@ func (resource *RestResource) RequestHandler() http.HandlerFunc {
     }
 
     // FIXME - convert content to string..?
-    // rw.WriteHeader(stat)
-    // rw.Write(content)
+    rw.WriteHeader(stat)
+    rw.Write(content)
   }
 }
 
@@ -125,8 +138,8 @@ type RestService struct {
   baseUri string
 }
 
-func (service *RestService) MarshalContent(data interface{}) (interface{}, interface{}) {
-  return data, nil
+func (service *RestService) MarshalContent(data interface{}) ([]byte, error) {
+  return AsBytes(data)
 }
 
 func (service *RestService) AddResource(resource RestResource, path string) { // TODO - make path deprecated, get it from resource

@@ -16,5 +16,5 @@ import (
 
 func main() {
   // TODO
-  fmt.Println('Sloth')
+  fmt.Println("Sloth")
 }
