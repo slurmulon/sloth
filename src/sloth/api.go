@@ -6,27 +6,13 @@ import (
   "fmt"
   "net/http"
   "net/url"
-  "bytes"
-  "encoding/gob"
   // "time"
 )
-
-// type RestRequest  (int, interface{})
-// type RestResponse (int, interface{})
 
 type RestError interface {
   Error() string
 }
 
-func AsBytes(key interface{}) ([]byte, error) {
-  var buf bytes.Buffer
-  enc := gob.NewEncoder(&buf)
-  err := enc.Encode(key)
-  if err != nil {
-      return nil, err
-  }
-  return buf.Bytes(), nil
-}
 
 // Methods
 
