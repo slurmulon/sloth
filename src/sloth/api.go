@@ -6,7 +6,6 @@ import (
   "fmt"
   "net/http"
   "net/url"
-  // "time"
 )
 
 // Methods
@@ -68,9 +67,6 @@ func (resource *RestResource) RequestHandler() http.HandlerFunc {
     method := request.Method
     values := request.Form
 
-    // TODO - validate method
-
-    // TODO - base on method interfaces (Getable, Postable) instead
     switch method {
     case GET:
       stat, data = resource.Get(values)
@@ -94,7 +90,6 @@ func (resource *RestResource) RequestHandler() http.HandlerFunc {
       resource.AbortRequest(rw, 500)
     }
 
-    // FIXME - convert content to string..?
     rw.WriteHeader(stat)
     rw.Write(content)
   }
