@@ -9,11 +9,6 @@ import (
   // "time"
 )
 
-type RestError interface {
-  Error() string
-}
-
-
 // Methods
 
 const (
@@ -40,6 +35,10 @@ func (resource *RestResource) Delete(values url.Values) (int, interface{}) { ret
 // Resources
 
 // var _ RestfulResource = (*RestResource)(nil)
+
+type RestError interface {
+  Error() string
+}
 
 type RestfulResource interface {
   all()     (int, interface{})
