@@ -30,6 +30,11 @@ type Postable  interface { Post(values url.Values)   (int, interface{}) }
 type Putable   interface { Put(values url.Values)    (int, interface{}) }
 type Deletable interface { Delete(values url.Values) (int, interface{}) }
 
+func (resource *RestResource) Get(values url.Values)    (int, interface{}) { return 405, "" }
+func (resource *RestResource) Put(values url.Values)    (int, interface{}) { return 405, "" }
+func (resource *RestResource) Post(values url.Values)   (int, interface{}) { return 405, "" }
+func (resource *RestResource) Delete(values url.Values) (int, interface{}) { return 405, "" }
+
 // func (getable *Getable) Get(values url.Values) (int, interface{}) {
 //   return 405, ""
 // }
@@ -99,29 +104,6 @@ func (resource *RestResource) RequestHandler() http.HandlerFunc {
 
 func (resource *RestResource) AbortRequest(rw http.ResponseWriter, statusCode int) {
   rw.WriteHeader(statusCode)
-}
-
-// func (resource *RestResource) ValidateMethod(method interface) {
-//   if m, ok := v.(checkForMethod); ok {
-//     m.Method()
-//   }
-// }
-
-// default GET (remove eventually)
-func (resource *RestResource) Get(values url.Values) (int, interface{}) {
-  return 405, ""
-}
-
-func (resource *RestResource) Put(values url.Values) (int, interface{}) {
-  return 405, ""
-}
-
-func (resource *RestResource) Post(values url.Values) (int, interface{}) {
-  return 405, ""
-}
-
-func (resource *RestResource) Delete(values url.Values) (int, interface{}) {
-  return 405, ""
 }
 
 type RestAPI struct {

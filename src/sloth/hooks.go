@@ -2,25 +2,40 @@
 
 package sloth
 
+import "net/http"
+
+// Hooks
+
 var _ RestfulHook = (*RestHook)(nil)
-var _ RestfulHookResource = (*RestHookResource)(nil)
 
 type RestfulHook interface {
   Ping()
   Kill() // rename Unsubscribe?
 }
 
+// TODO - make persistable
+type RestHook struct {
+  subscriberUrl    string
+  subscriberMethod string
+}
+
+func (hook *RestHook) Ping() {
+  
+}
+
+func (hook *RestHook) Kill() {
+  
+}
+
+// Hook resource
+
+// var _ RestfulHookResource = (*RestHookResource)(nil)
+
 type RestfulHookResource interface {
   RestfulResource
 
   Subscribe(subUrl string, subMethod string)
   Broadcast(data interface{})
-}
-
-// TODO - make persistable
-type RestHook struct {
-  subscriberUrl    string
-  subscriberMethod string
 }
 
 type RestHookResource struct {
@@ -30,26 +45,20 @@ type RestHookResource struct {
 }
 
 func (resource *RestHookResource) Subscribe(subUrl string, subMethod string) {
-  hooks.push(&RestHook {
+  newHook := RestHook {
     subscriberUrl    : subUrl,
     subscriberMethod : subMethod,
-  })
+  }
+
+  resource.Hooks = append(resource.Hooks, newHook)
 }
 
-func (resource *RestHookResource) Broadcast(data) {
+func (resource *RestHookResource) Broadcast(data interface{}) {
   for _, hook := range resource.Hooks {
-    http.NewRequest(hook.subscriberMethod, hook.subscriberUrls, nil)
+    http.NewRequest(hook.subscriberMethod, hook.subscriberUrl, nil)
     
     // if err != nil {
     //   // handle error
     // }
   }
-}
-
-func (hook *RestHook) Ping() {
-  
-}
-
-func (hook *RestHook) Kill() {
-  
 }
