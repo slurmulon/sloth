@@ -25,21 +25,14 @@ const (
   DELETE = "DELETE"
 )
 
-type Getable interface {
-  Get(values url.Values) (int, interface{})
-}
+type Getable   interface { Get(values url.Values)    (int, interface{}) }
+type Postable  interface { Post(values url.Values)   (int, interface{}) }
+type Putable   interface { Put(values url.Values)    (int, interface{}) }
+type Deletable interface { Delete(values url.Values) (int, interface{}) }
 
-type Postable interface {
-  Post(values url.Values) (int, interface{})
-}
-
-type Putable interface {
-  Put(values url.Values) (int, interface{})
-}
-
-type Deletable interface {
-  Delete(values url.Values) (int, interface{})
-}
+// func (getable *Getable) Get(values url.Values) (int, interface{}) {
+//   return 405, ""
+// }
 
 // Resources
 
@@ -49,7 +42,7 @@ type RestfulResource interface {
   all()     (int, interface{})
   byId(int) (int, interface{})
 
-  MarshalContent(interface{})
+  MarshalContent(data interface{}) (interface{}, interface{}) 
   RequestHandler() http.HandlerFunc
 }
 
@@ -57,13 +50,13 @@ type RestResource struct {
   baseUrl, contentType string
 }
 
-func (resource *RestResource) MarshalContent(data interface{}) {
-  return data
+func (resource *RestResource) MarshalContent(data interface{}) (interface{}, interface{}) {
+  return data, nil
 }
 
-type RestRequestInterceptor func(int, interface{})
+// type RestRequestInterceptor func(int, interface{})
 
-func (resource *RestResource) RequestHandler(requestInterceptor RestRequestInterceptor) http.HandlerFunc {
+func (resource *RestResource) RequestHandler() http.HandlerFunc {
   return func(rw http.ResponseWriter, request *http.Request) {
     var data interface{}
     var stat int
@@ -71,6 +64,8 @@ func (resource *RestResource) RequestHandler(requestInterceptor RestRequestInter
     request.ParseForm()
     method := request.Method
     values := request.Form
+
+    // TODO - validate method
 
     // TODO - base on method interfaces (Getable, Postable) instead
     switch method {
@@ -93,12 +88,12 @@ func (resource *RestResource) RequestHandler(requestInterceptor RestRequestInter
     content, err := resource.MarshalContent(data)
 
     if err != nil {
-      // log - failed to marshal content
-      resource.Abort(rw, 500)
+      resource.AbortRequest(rw, 500)
     }
 
-    rw.WriteHeader(stat)
-    rw.Write(content)
+    // FIXME - convert content to string..?
+    // rw.WriteHeader(stat)
+    // rw.Write(content)
   }
 }
 
@@ -106,11 +101,27 @@ func (resource *RestResource) AbortRequest(rw http.ResponseWriter, statusCode in
   rw.WriteHeader(statusCode)
 }
 
+// func (resource *RestResource) ValidateMethod(method interface) {
+//   if m, ok := v.(checkForMethod); ok {
+//     m.Method()
+//   }
+// }
+
 // default GET (remove eventually)
 func (resource *RestResource) Get(values url.Values) (int, interface{}) {
-  data := map[string]string{"hello": "world"}
+  return 405, ""
+}
 
-  return StatusOK, data
+func (resource *RestResource) Put(values url.Values) (int, interface{}) {
+  return 405, ""
+}
+
+func (resource *RestResource) Post(values url.Values) (int, interface{}) {
+  return 405, ""
+}
+
+func (resource *RestResource) Delete(values url.Values) (int, interface{}) {
+  return 405, ""
 }
 
 type RestAPI struct {
@@ -132,12 +143,12 @@ type RestService struct {
   baseUri string
 }
 
-func (service *RestService) MarshalContent(data interface{}) {
-  return data
+func (service *RestService) MarshalContent(data interface{}) (interface{}, interface{}) {
+  return data, nil
 }
 
 func (service *RestService) AddResource(resource RestResource, path string) { // TODO - make path deprecated, get it from resource
-  http.HandleFunc(path, resource.requestHandler())
+  http.HandleFunc(path, resource.RequestHandler())
 }
 
 func (service *RestService) Start(port int) {
