@@ -37,10 +37,10 @@ func (able *Deletable) Delete(values url.Values) (int, interface{}) { return 405
 
 // TODO - defaults for Getable, Postable, etc.
 
-func (resource *RestResource) Get(values url.Values)    (int, interface{}) { return 405, "" }
-func (resource *RestResource) Put(values url.Values)    (int, interface{}) { return 405, "" }
-func (resource *RestResource) Post(values url.Values)   (int, interface{}) { return 405, "" }
-func (resource *RestResource) Delete(values url.Values) (int, interface{}) { return 405, "" }
+func (resource RestResource) Get(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented GET",    resource); return 405, "" }
+func (resource RestResource) Put(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented PUT",    resource); return 405, "" }
+func (resource RestResource) Post(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented POST",   resource); return 405, "" }
+func (resource RestResource) Delete(values url.Values) (int, interface{}) { fmt.Println("[WARN] Unimplemented DELETE", resource); return 405, "" }
 
 // func (getable *Getable) Get(values url.Values) (int, interface{}) {
 //   return 405, ""
