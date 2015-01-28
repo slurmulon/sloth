@@ -58,7 +58,6 @@ type RestfulResource interface {
   All()     (int, interface{})
   ById(int) (int, interface{})
 
-  //MarshalContent(data interface{}) (interface{}, interface{}) 
   MarshalContent(data interface{}) ([]byte, error)
   RequestHandler() http.HandlerFunc
 }
@@ -123,7 +122,7 @@ func (resource *RestResource) AbortRequest(rw http.ResponseWriter, statusCode in
 }
 
 type RestAPI struct {
-  host, base string
+  Host, BaseUrl string
 
   resources []RestResource
 }
@@ -151,6 +150,8 @@ func (service *RestService) AddResource(resource RestfulResource, path string) {
 
 func (service *RestService) Start(port int) {
   portStr := fmt.Sprintf(":%d", port)
+
+  fmt.Println("Binding to port ", port)
 
   http.ListenAndServe(portStr, nil)
 }
