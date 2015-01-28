@@ -8,6 +8,8 @@ import (
   "net/url"
 )
 
+// type url.Values map[string][]string
+
 // Methods
 
 const (
@@ -17,10 +19,23 @@ const (
   DELETE = "DELETE"
 )
 
-type Getable   interface { Get(values url.Values)    (int, interface{}) }
-type Postable  interface { Post(values url.Values)   (int, interface{}) }
-type Putable   interface { Put(values url.Values)    (int, interface{}) }
-type Deletable interface { Delete(values url.Values) (int, interface{}) }
+// type Getable   interface { Get(values url.Values)    (int, interface{}) }
+// type Postable  interface { Post(values url.Values)   (int, interface{}) }
+// type Putable   interface { Put(values url.Values)    (int, interface{}) }
+// type Deletable interface { Delete(values url.Values) (int, interface{}) }
+type (
+  Getable struct{}
+  Postable struct{}
+  Putable struct{}
+  Deletable struct{}
+)
+
+func (able *Getable)   Get(values url.Values)    (int, interface{}) { return 405, "" }
+func (able *Postable)  Put(values url.Values)    (int, interface{}) { return 405, "" }
+func (able *Putable)   Post(values url.Values)   (int, interface{}) { return 405, "" }
+func (able *Deletable) Delete(values url.Values) (int, interface{}) { return 405, "" }
+
+// TODO - defaults for Getable, Postable, etc.
 
 func (resource *RestResource) Get(values url.Values)    (int, interface{}) { return 405, "" }
 func (resource *RestResource) Put(values url.Values)    (int, interface{}) { return 405, "" }
@@ -40,8 +55,8 @@ type RestError interface {
 }
 
 type RestfulResource interface {
-  all()     (int, interface{})
-  byId(int) (int, interface{})
+  All()     (int, interface{})
+  ById(int) (int, interface{})
 
   //MarshalContent(data interface{}) (interface{}, interface{}) 
   MarshalContent(data interface{}) ([]byte, error)
@@ -49,16 +64,24 @@ type RestfulResource interface {
 }
 
 type RestResource struct {
-  baseUrl, contentType string
+  UrlSlug, ContentType string
 }
 
-func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {//(interface{}, interface{}) {
+func (resource RestResource) All() (int, interface{}) {
+  return 200, "TODO"
+}
+
+func (resource RestResource) ById(id int) (int, interface{}) {
+  return 200, "TODO"
+}
+
+func (resource RestResource) MarshalContent(data interface{}) ([]byte, error) {//(interface{}, interface{}) {
   return AsBytes(data)
 }
 
 // type RestRequestInterceptor func(int, interface{})
 
-func (resource *RestResource) RequestHandler() http.HandlerFunc {
+func (resource RestResource) RequestHandler() http.HandlerFunc {
   return func(rw http.ResponseWriter, request *http.Request) {
     var data interface{}
     var stat int
@@ -110,19 +133,19 @@ type RestAPI struct {
 // var _ RestfulService = (*RestService)(nil)
 
 type RestfulService interface {
-  MarshalContent(data interface{})
+  MarshalContent(data interface{}) ([]byte, error)
   RequestHandler(resource RestResource) http.HandlerFunc
 }
 
 type RestService struct {
-  baseUri string
+  BaseUrl string
 }
 
 func (service *RestService) MarshalContent(data interface{}) ([]byte, error) {
   return AsBytes(data)
 }
 
-func (service *RestService) AddResource(resource RestResource, path string) { // TODO - make path deprecated, get it from resource
+func (service *RestService) AddResource(resource RestfulResource, path string) { // TODO - make path deprecated, get it from resource
   http.HandleFunc(path, resource.RequestHandler())
 }
 
