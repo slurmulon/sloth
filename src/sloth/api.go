@@ -48,12 +48,11 @@ type RestfulResource interface {
 }
 
 type RestResource struct {
-  UrlSlug, ContentType string
+  UrlSlug, contentType string
 }
 
 func (resource *RestResource) Slug() string {
-  fmt.Println("WEWRLKJSLDKFJ ", resource.UrlSlug)
-  return "/HI"
+  return resource.UrlSlug
 }
 
 func (resource *RestResource) All() (int, interface{}) {
@@ -105,6 +104,8 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
     if err != nil {
       service.AbortRequest(rw, 500)
     }
+
+    rw.Header().Set("Content-Type", "text/html; charset=utf-8") // TODO
 
     rw.WriteHeader(stat)
     rw.Write(content)
