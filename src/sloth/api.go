@@ -33,6 +33,8 @@ type RestError interface {
 }
 
 type RestfulResource interface {
+  Slug() string
+
   All()     (int, interface{})
   ById(int) (int, interface{})
 
@@ -49,15 +51,20 @@ type RestResource struct {
   UrlSlug, ContentType string
 }
 
-func (resource RestResource) All() (int, interface{}) {
+func (resource *RestResource) Slug() string {
+  fmt.Println("WEWRLKJSLDKFJ ", resource.UrlSlug)
+  return "/HI"
+}
+
+func (resource *RestResource) All() (int, interface{}) {
   return 200, "TODO"
 }
 
-func (resource RestResource) ById(id int) (int, interface{}) {
+func (resource *RestResource) ById(id int) (int, interface{}) {
   return 200, "TODO"
 }
 
-func (resource RestResource) MarshalContent(data interface{}) ([]byte, error) {//(interface{}, interface{}) {
+func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {//(interface{}, interface{}) {
   return AsBytes(data)
 }
 
@@ -127,8 +134,8 @@ func (service *RestService) MarshalContent(data interface{}) ([]byte, error) {
   return AsBytes(data)
 }
 
-func (service *RestService) AddResource(resource RestfulResource, path string) { // TODO - make path deprecated, get it from resource
-  http.HandleFunc(path, service.RequestHandler(resource))
+func (service *RestService) AddResource(resource RestfulResource) { // TODO - make path deprecated, get it from resource
+  http.HandleFunc(resource.Slug(), service.RequestHandler(resource))
 }
 
 func (service *RestService) Start(port int) {
