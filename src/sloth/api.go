@@ -26,7 +26,7 @@ func (resource *RestResource) Delete(values url.Values) (int, interface{}) { fmt
 
 // Resources
 
-// var _ RestfulResource = (*RestResource)(nil)
+var _ RestfulResource = (*RestResource)(nil)
 
 type RestError interface {
   Error() string
@@ -69,8 +69,27 @@ func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {
 
 // type RestRequestInterceptor func(int, interface{})
 
-func (service *RestService) AbortRequest(rw http.ResponseWriter, statusCode int) {
-  rw.WriteHeader(statusCode)
+type RestAPI struct {
+  BaseUrl string
+
+  resources []RestResource
+}
+
+// Services
+
+var _ RestfulService = (*RestService)(nil)
+
+type RestfulService interface {
+  MarshalContent(data interface{}) ([]byte, error)
+  RequestHandler(resource RestfulResource) http.HandlerFunc
+}
+
+type RestService struct {
+  BaseUrl string
+}
+
+func (service *RestService) MarshalContent(data interface{}) ([]byte, error) {
+  return AsBytes(data)
 }
 
 func (service *RestService) RequestHandler(resource RestfulResource) http.HandlerFunc {
@@ -112,29 +131,6 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
   }
 }
 
-type RestAPI struct {
-  BaseUrl string
-
-  resources []RestResource
-}
-
-// Services
-
-// var _ RestfulService = (*RestService)(nil)
-
-type RestfulService interface {
-  MarshalContent(data interface{}) ([]byte, error)
-  RequestHandler(resource RestResource) http.HandlerFunc
-}
-
-type RestService struct {
-  BaseUrl string
-}
-
-func (service *RestService) MarshalContent(data interface{}) ([]byte, error) {
-  return AsBytes(data)
-}
-
 func (service *RestService) AddResource(resource RestfulResource) { // TODO - make path deprecated, get it from resource
   http.HandleFunc(resource.Slug(), service.RequestHandler(resource))
 }
@@ -147,6 +143,6 @@ func (service *RestService) Start(port int) {
   http.ListenAndServe(portStr, nil)
 }
 
-func (service *RestService) Abort(rw http.ResponseWriter, statusCode int) {
+func (service *RestService) AbortRequest(rw http.ResponseWriter, statusCode int) {
   rw.WriteHeader(statusCode)
 }
