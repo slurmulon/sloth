@@ -35,7 +35,6 @@ func (FooResource) Post(values url.Values) (int, interface{}) {
 }
 
 func main() {
-  // TODO
   fmt.Println("Sloth example")
 
   slothResource := &FooResource{UrlSlug: "slkdfj"}

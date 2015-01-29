@@ -19,9 +19,9 @@ const (
   DELETE = "DELETE"
 )
 
-type Getable interface {
-  Get(values url.Values) (int, interface{})
-}
+// type Getable interface {
+//   Get(values url.Values) (int, interface{})
+// }
 
 // type (
 //   Getable   struct{}
@@ -55,7 +55,12 @@ type RestfulResource interface {
   ById(int) (int, interface{})
 
   MarshalContent(data interface{}) ([]byte, error)
-  RequestHandler() http.HandlerFunc
+  // RequestHandler() http.HandlerFunc
+
+  Get(values url.Values) (int, interface{})
+  Post(values url.Values) (int, interface{})
+  Put(values url.Values) (int, interface{})
+  Delete(values url.Values) (int, interface{})
 }
 
 type RestResource struct {
@@ -76,7 +81,11 @@ func (resource RestResource) MarshalContent(data interface{}) ([]byte, error) {/
 
 // type RestRequestInterceptor func(int, interface{})
 
-func (resource *RestResource) RequestHandler() http.HandlerFunc {
+func (service *RestService) AbortRequest(rw http.ResponseWriter, statusCode int) {
+  rw.WriteHeader(statusCode)
+}
+
+func (service *RestService) RequestHandler(resource RestfulResource) http.HandlerFunc {
   return func(rw http.ResponseWriter, request *http.Request) {
     var data interface{}
     var stat int
@@ -91,7 +100,7 @@ func (resource *RestResource) RequestHandler() http.HandlerFunc {
       // if ok := resource.(Getable); ok { 
       //   stat, data = ok.Get(values)
       // }
-       stat, data = Getable(resource).Get(values)
+       stat, data = resource.Get(values)
     // case POST:
     //   stat, data = resource.Post(values)
     // case PUT:
@@ -99,7 +108,7 @@ func (resource *RestResource) RequestHandler() http.HandlerFunc {
     // case DELETE:
     //   stat, data = resource.Delete(values)
     default:
-      resource.AbortRequest(rw, 405)
+      service.AbortRequest(rw, 405)
       return
     }
 
@@ -109,16 +118,12 @@ func (resource *RestResource) RequestHandler() http.HandlerFunc {
     content, err := resource.MarshalContent(data)
 
     if err != nil {
-      resource.AbortRequest(rw, 500)
+      service.AbortRequest(rw, 500)
     }
 
     rw.WriteHeader(stat)
     rw.Write(content)
   }
-}
-
-func (resource *RestResource) AbortRequest(rw http.ResponseWriter, statusCode int) {
-  rw.WriteHeader(statusCode)
 }
 
 type RestAPI struct {
@@ -145,7 +150,7 @@ func (service *RestService) MarshalContent(data interface{}) ([]byte, error) {
 }
 
 func (service *RestService) AddResource(resource RestfulResource, path string) { // TODO - make path deprecated, get it from resource
-  http.HandleFunc(path, resource.RequestHandler())
+  http.HandleFunc(path, service.RequestHandler(resource))
 }
 
 func (service *RestService) Start(port int) {
