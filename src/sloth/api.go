@@ -19,32 +19,28 @@ const (
   DELETE = "DELETE"
 )
 
-// type Getable   interface { Get(values url.Values)    (int, interface{}) }
-// type Postable  interface { Post(values url.Values)   (int, interface{}) }
-// type Putable   interface { Put(values url.Values)    (int, interface{}) }
-// type Deletable interface { Delete(values url.Values) (int, interface{}) }
-type (
-  Getable struct{}
-  Postable struct{}
-  Putable struct{}
-  Deletable struct{}
-)
+type Getable interface {
+  Get(values url.Values) (int, interface{})
+}
 
-func (able *Getable)   Get(values url.Values)    (int, interface{}) { return 405, "" }
-func (able *Postable)  Put(values url.Values)    (int, interface{}) { return 405, "" }
-func (able *Putable)   Post(values url.Values)   (int, interface{}) { return 405, "" }
-func (able *Deletable) Delete(values url.Values) (int, interface{}) { return 405, "" }
+// type (
+//   Getable   struct{}
+//   Postable  struct{}
+//   Putable   struct{}
+//   Deletable struct{}
+// )
 
-// TODO - defaults for Getable, Postable, etc.
+// func (able *Getable)   Get(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented GET");    return 405, "" }
+// func (able *Postable)  Put(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented PUT");    return 405, "" }
+// func (able *Putable)   Post(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented POST");   return 405, "" }
+// func (able *Deletable) Delete(values url.Values) (int, interface{}) { fmt.Println("[WARN] Unimplemented DELETE"); return 405, "" }
 
-func (resource RestResource) Get(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented GET",    resource); return 405, "" }
-func (resource RestResource) Put(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented PUT",    resource); return 405, "" }
-func (resource RestResource) Post(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented POST",   resource); return 405, "" }
-func (resource RestResource) Delete(values url.Values) (int, interface{}) { fmt.Println("[WARN] Unimplemented DELETE", resource); return 405, "" }
+// // TODO - defaults for Getable, Postable, etc.
 
-// func (getable *Getable) Get(values url.Values) (int, interface{}) {
-//   return 405, ""
-// }
+func (resource *RestResource) Get(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented GET",    resource); return 405, "" }
+func (resource *RestResource) Put(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented PUT",    resource); return 405, "" }
+func (resource *RestResource) Post(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented POST",   resource); return 405, "" }
+func (resource *RestResource) Delete(values url.Values) (int, interface{}) { fmt.Println("[WARN] Unimplemented DELETE", resource); return 405, "" }
 
 // Resources
 
@@ -80,7 +76,7 @@ func (resource RestResource) MarshalContent(data interface{}) ([]byte, error) {/
 
 // type RestRequestInterceptor func(int, interface{})
 
-func (resource RestResource) RequestHandler() http.HandlerFunc {
+func (resource *RestResource) RequestHandler() http.HandlerFunc {
   return func(rw http.ResponseWriter, request *http.Request) {
     var data interface{}
     var stat int
@@ -88,16 +84,20 @@ func (resource RestResource) RequestHandler() http.HandlerFunc {
     request.ParseForm()
     method := request.Method
     values := request.Form
-
+ 
+    // TODO - match type (Getable, Postable, etc)
     switch method {
     case GET:
-      stat, data = resource.Get(values)
-    case POST:
-      stat, data = resource.Post(values)
-    case PUT:
-      stat, data = resource.Put(values)
-    case DELETE:
-      stat, data = resource.Delete(values)
+      // if ok := resource.(Getable); ok { 
+      //   stat, data = ok.Get(values)
+      // }
+       stat, data = Getable(resource).Get(values)
+    // case POST:
+    //   stat, data = resource.Post(values)
+    // case PUT:
+    //   stat, data = resource.Put(values)
+    // case DELETE:
+    //   stat, data = resource.Delete(values)
     default:
       resource.AbortRequest(rw, 405)
       return
@@ -122,7 +122,7 @@ func (resource *RestResource) AbortRequest(rw http.ResponseWriter, statusCode in
 }
 
 type RestAPI struct {
-  Host, BaseUrl string
+  BaseUrl string
 
   resources []RestResource
 }
