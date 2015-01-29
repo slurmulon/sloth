@@ -19,12 +19,10 @@ type FooResource struct {
   UrlSlug string
   
   sloth.RestResource
-  // sloth.Getable
-  // sloth.Postable
 }
 
 func (FooResource) Get(values url.Values) (int, interface{}) {
-  fmt.Println("weeeeeee")
+  fmt.Println("Successful GET!")
   data := map[string]string{"hello": "world"}
   return 200, data
 }
