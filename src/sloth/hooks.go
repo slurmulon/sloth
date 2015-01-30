@@ -29,7 +29,7 @@ func (hook *RestHook) Kill() {
 
 // Hook resource
 
-// var _ RestfulHookResource = (*RestHookResource)(nil)
+var _ RestfulHookResource = (*RestHookResource)(nil)
 
 type RestfulHookResource interface {
   RestfulResource
