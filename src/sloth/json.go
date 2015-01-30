@@ -17,19 +17,19 @@ type JsonResource struct {
   RestResource
 }
 
-func (service *JsonService) MarshalContent(data interface{}) ([]byte, error) {
+func (*JsonService) MarshalContent(data interface{}) ([]byte, error) {
   return json.Marshal(data)
 }
 
-func (resource *JsonService) Type() string {
+func (*JsonService) Type() string {
   return "application/json"
 }
 
-func (resource *JsonResource) MarshalContent(data interface{}) ([]byte, error) {
+func (*JsonResource) MarshalContent(data interface{}) ([]byte, error) {
   return json.Marshal(data)
 }
 
-func (resource *JsonResource) Type() string {
+func (*JsonResource) Type() string {
   return "application/json"
 }
 
