@@ -34,6 +34,7 @@ type RestError interface {
 
 type RestfulResource interface {
   Slug() string
+  Type() string
 
   All()     (int, interface{})
   ById(int) (int, interface{})
@@ -53,6 +54,10 @@ type RestResource struct {
 
 func (resource *RestResource) Slug() string {
   return resource.UrlSlug
+}
+
+func (resource *RestResource) Type() string {
+  return resource.ContentType
 }
 
 func (resource *RestResource) All() (int, interface{}) {
@@ -124,7 +129,9 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
       service.AbortRequest(rw, 500)
     }
 
-    rw.Header().Set("Content-Type", "text/html; charset=utf-8") // TODO
+    if resource.Type() != "" {
+      rw.Header().Set("Content-Type", resource.Type()) // "text/html; charset=utf-8")
+    }
 
     rw.WriteHeader(stat)
     rw.Write(content)

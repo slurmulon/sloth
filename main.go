@@ -25,7 +25,7 @@ func (Foo) Post(values url.Values) (int, interface{}) {
 func main() {
   fmt.Println("Sloth example")
 
-  slothResource := Foo{ sloth.RestResource{ UrlSlug: "/hello" } }
+  slothResource := Foo{ sloth.RestResource{ UrlSlug: "/hello", ContentType: "text/html" } }
   slothService  := sloth.RestService{ Port: 3000 }
 
   slothService.AddResource(&slothResource)
