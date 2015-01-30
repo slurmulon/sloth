@@ -40,9 +40,9 @@ type RestfulResource interface {
   MarshalContent(data interface{}) ([]byte, error)
   // RequestHandler() http.HandlerFunc
 
-  Get(values url.Values) (int, interface{})
-  Post(values url.Values) (int, interface{})
-  Put(values url.Values) (int, interface{})
+  Get(values url.Values)    (int, interface{})
+  Post(values url.Values)   (int, interface{})
+  Put(values url.Values)    (int, interface{})
   Delete(values url.Values) (int, interface{})
 }
 
