@@ -17,8 +17,7 @@ func (FooText) Get(values url.Values) (int, interface{}) {
 }
 
 func (FooText) Post(values url.Values) (int, interface{}) {
-  data := map[string]string{"yum": "thanks"}
-  return 200, data
+  return 200, "yum, thanks!"
 }
 
 // Basic json resource
@@ -36,9 +35,9 @@ func main() {
 
   slothTextResource := FooText{ sloth.RestResource{ UrlSlug: "/hello", ContentType: "text/html; charset=utf8" } }
   slothJsonResource := FooJson{ sloth.JsonResource{ UrlSlug: "/json" } }
-  slothService  := sloth.RestService{ Port: 3000 }
+  slothRestService  := sloth.RestService{ Port: 3000 }
 
-  slothService.AddResource(&slothTextResource)
-  slothService.AddResource(&slothJsonResource)
-  slothService.Start()
+  slothRestService.AddResource(&slothTextResource)
+  slothRestService.AddResource(&slothJsonResource)
+  slothRestService.Start()
 }
