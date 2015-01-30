@@ -7,29 +7,38 @@ import (
   // "database/sql"
 )
 
-// https://cloud.google.com/appengine/docs/go/gettingstarted/helloworld
-
-type Foo struct {
+// Basic text resource
+type FooText struct {
   sloth.RestResource
 }
 
-func (Foo) Get(values url.Values) (int, interface{}) {
-  return 200, "hello world"
+func (FooText) Get(values url.Values) (int, interface{}) {
+  return 200, "hello world!"
 }
 
-func (Foo) Post(values url.Values) (int, interface{}) {
+func (FooText) Post(values url.Values) (int, interface{}) {
   data := map[string]string{"yum": "thanks"}
   return 200, data
 }
 
-func main() {
-  fmt.Println("Sloth example")
+// Basic json resource
+type FooJson struct {
+  sloth.JsonResource
+}
 
-  slothResource := Foo{ sloth.RestResource{ UrlSlug: "/hello", ContentType: "text/html" } }
+func (FooJson) Get(values url.Values) (int, interface{}) {
+  data := map[string]string{"hello": "json!"}
+  return 200, data
+}
+
+func main() {
+  fmt.Println("Sloth - Restful APIs in Go")
+
+  slothTextResource := FooText{ sloth.RestResource{ UrlSlug: "/hello", ContentType: "text/html; charset=utf8" } }
+  slothJsonResource := FooJson{ sloth.JsonResource{ UrlSlug: "/json" }} // meh, hate how deep this has to be
   slothService  := sloth.RestService{ Port: 3000 }
 
-  slothService.AddResource(&slothResource)
+  slothService.AddResource(&slothTextResource)
+  slothService.AddResource(&slothJsonResource)
   slothService.Start()
-
-  // fmt.Println("sloth resource " + slothResource)
 }

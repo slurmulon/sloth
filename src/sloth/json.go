@@ -7,18 +7,32 @@ import (
 // Ensures type checking during json marshalling
 // var _ json.Marshaler = (*RawMessage)(nil)
 
-type JsonRestService struct {
-  *RestService
+type JsonService struct {
+  RestService
 }
 
-type JsonRestResource struct {
-  *RestResource
+type JsonResource struct {
+  UrlSlug string
+
+  RestResource
 }
 
-func (service *JsonRestService) MarshalContent(data interface{}) ([]byte, error) {
+func (service *JsonService) MarshalContent(data interface{}) ([]byte, error) {
   return json.Marshal(data)
 }
 
-func (resource *JsonRestResource) MarshalContent(data interface{}) ([]byte, error) {
+func (resource *JsonService) Type() string {
+  return "application/json"
+}
+
+func (resource *JsonResource) MarshalContent(data interface{}) ([]byte, error) {
   return json.Marshal(data)
+}
+
+func (resource *JsonResource) Type() string {
+  return "application/json"
+}
+
+func (resource *JsonResource) Slug() string {
+  return resource.UrlSlug
 }

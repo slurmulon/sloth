@@ -66,7 +66,7 @@ func (resource *RestResource) ById(id int) (int, interface{}) {
   return 200, "TODO"
 }
 
-func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {//(interface{}, interface{}) {
+func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {
   return AsBytes(data)
 }
 
