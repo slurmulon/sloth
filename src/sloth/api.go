@@ -74,12 +74,6 @@ func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {
 
 // type RestRequestInterceptor func(int, interface{})
 
-// type RestAPI struct {
-//   BaseUrl string
-
-//   resources []RestResource
-// }
-
 // Services
 
 var _ RestfulService = (*RestService)(nil)
@@ -108,7 +102,7 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
  
     switch method {
     case GET:
-       stat, data = resource.Get(values)
+      stat, data = resource.Get(values)
     case POST:
       stat, data = resource.Post(values)
     case PUT:
