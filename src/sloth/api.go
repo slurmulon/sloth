@@ -48,7 +48,7 @@ type RestfulResource interface {
 }
 
 type RestResource struct {
-  UrlSlug, contentType string
+  UrlSlug, ContentType string
 }
 
 func (resource *RestResource) Slug() string {
@@ -69,11 +69,11 @@ func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {
 
 // type RestRequestInterceptor func(int, interface{})
 
-type RestAPI struct {
-  BaseUrl string
+// type RestAPI struct {
+//   BaseUrl string
 
-  resources []RestResource
-}
+//   resources []RestResource
+// }
 
 // Services
 
@@ -85,7 +85,7 @@ type RestfulService interface {
 }
 
 type RestService struct {
-  BaseUrl string
+  Port int
 }
 
 func (service *RestService) MarshalContent(data interface{}) ([]byte, error) {
@@ -135,10 +135,10 @@ func (service *RestService) AddResource(resource RestfulResource) { // TODO - ma
   http.HandleFunc(resource.Slug(), service.RequestHandler(resource))
 }
 
-func (service *RestService) Start(port int) {
-  portStr := fmt.Sprintf(":%d", port)
+func (service *RestService) Start() {
+  portStr := fmt.Sprintf(":%d", service.Port)
 
-  fmt.Println("Binding to port ", port)
+  fmt.Println("Binding to port ", portStr)
 
   http.ListenAndServe(portStr, nil)
 }

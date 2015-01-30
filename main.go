@@ -4,6 +4,7 @@ import (
   "fmt"
   "sloth"
   "net/url"
+  // "database/sql"
 )
 
 // https://cloud.google.com/appengine/docs/go/gettingstarted/helloworld
@@ -25,10 +26,10 @@ func main() {
   fmt.Println("Sloth example")
 
   slothResource := Foo{ sloth.RestResource{ UrlSlug: "/hello" } }
-  slothService  := sloth.RestService{ BaseUrl: "http://foo.bar/api" }
+  slothService  := sloth.RestService{ Port: 3000 }
 
   slothService.AddResource(&slothResource)
-  slothService.Start(3000)
+  slothService.Start()
 
   // fmt.Println("sloth resource " + slothResource)
 }
