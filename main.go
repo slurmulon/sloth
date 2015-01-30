@@ -35,7 +35,7 @@ func main() {
   fmt.Println("Sloth - Restful APIs in Go")
 
   slothTextResource := FooText{ sloth.RestResource{ UrlSlug: "/hello", ContentType: "text/html; charset=utf8" } }
-  slothJsonResource := FooJson{ sloth.JsonResource{ UrlSlug: "/json" }}
+  slothJsonResource := FooJson{ sloth.JsonResource{ UrlSlug: "/json" } }
   slothService  := sloth.RestService{ Port: 3000 }
 
   slothService.AddResource(&slothTextResource)

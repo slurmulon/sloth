@@ -122,7 +122,7 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
     }
 
     if resource.Type() != "" {
-      rw.Header().Set("Content-Type", resource.Type()) // "text/html; charset=utf-8")
+      rw.Header().Set("Content-Type", resource.Type())
     }
 
     rw.WriteHeader(stat)
@@ -130,7 +130,7 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
   }
 }
 
-func (service *RestService) AddResource(resource RestfulResource) { // TODO - make path deprecated, get it from resource
+func (service *RestService) AddResource(resource RestfulResource) {
   http.HandleFunc(resource.Slug(), service.RequestHandler(resource))
 }
 
