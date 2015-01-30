@@ -8,8 +8,6 @@ import (
   "net/url"
 )
 
-// type url.Values map[string][]string
-
 // Methods
 
 const (
