@@ -2,7 +2,12 @@
 
 package sloth
 
-import "net/http"
+import (
+  "fmt"
+  "net/http"
+  "database/sql"
+  _ "github.com/go-sql-driver/mysql"
+)
 
 // Hooks
 
@@ -17,6 +22,14 @@ type RestfulHook interface {
 type RestHook struct {
   subscriberUrl    string
   subscriberMethod string
+}
+
+func (hook *RestHook) Url() string {
+  return hook.subscriberUrl
+}
+
+func (hook *RestHook) Method() string {
+  return hook.subscriberMethod
 }
 
 func (hook *RestHook) Ping() {
@@ -61,4 +74,37 @@ func (resource *RestHookResource) Broadcast(data interface{}) {
     //   // handle error
     // }
   }
+}
+
+// Hook repository
+
+type HookRepo struct { }
+// type HookDB sql.DB
+
+func (repo *HookRepo) Db() *sql.DB {
+  db, err := sql.Open("mysql", "user:password@/hooks") // FIXME - integrate with config
+
+  if err != nil {
+    // log.Fatal(err)
+    fmt.Println("improve this error")
+  }
+
+  return db
+}
+
+func (repo *HookRepo) All() (*sql.Rows, error) {
+  return repo.Db().Query("select id, subscriber_url, subscriber_method from hooks")
+}
+
+// TODO
+// func (repo *HookRepo) Add(hook *RestfulHook) {
+//   // repo.Db().Query("select id, subscriber_url, subscriber_method from hooks")
+// }
+
+func (repo *HookRepo) Delete(hook *RestHook) {
+  repo.Db().Exec("delete from hooks where subscriber_url = ? and subscriber_method = ?", hook.subscriberUrl, hook.subscriberMethod)
+}
+
+func (repo *HookRepo) Close() {
+  repo.Db().Close()
 }
