@@ -38,14 +38,14 @@ type FooHook struct {
 func main() {
   fmt.Println("Sloth - Restful APIs in Go")
 
-  slothTextResource := FooText{ sloth.RestResource{ UrlSlug: "/hello", ContentType: "text/html; charset=utf8" } }
-  slothJsonResource := FooJson{ sloth.JsonResource{ UrlSlug: "/json" } }
-  slothHookResource := FooHook{ sloth.HookResource{ UrlSlug: "/hook" } }
+  slothTextResource := FooText{ sloth.RestResource{ UrlSlug: "hello", ContentType: "text/html; charset=utf8" } }
+  slothJsonResource := FooJson{ sloth.JsonResource{ UrlSlug: "json" } }
+  slothHookResource := FooHook{ sloth.HookResource{ UrlSlug: "hook" } }
   slothRestService  := sloth.RestService{ Port: 3000 }
 
-  slothRestService.AddResource(&slothTextResource)
-  slothRestService.AddResource(&slothJsonResource)
-  slothRestService.AddResource(&slothHookResource)
+  slothRestService.AddResource(&slothTextResource) // http://localhost:3000/hello
+  slothRestService.AddResource(&slothJsonResource) // http://localhost:3000/json
+  slothRestService.AddResource(&slothHookResource) // http://localhost:3000/hook
 
   slothRestService.Start()
 }
