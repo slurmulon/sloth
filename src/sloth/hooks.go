@@ -19,7 +19,6 @@ type RestfulHook interface {
   Kill()
 }
 
-// TODO - make persistable
 type RestHook struct {
   subscriberUrl    string
   subscriberMethod string

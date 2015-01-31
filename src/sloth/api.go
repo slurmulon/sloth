@@ -34,8 +34,8 @@ type RestfulResource interface {
   Slug() string
   Type() string
 
-  All()     (int, interface{})
-  ById(int) (int, interface{})
+  All()     RestfulResource
+  ById(int) RestfulResource
 
   MarshalContent(data interface{}) ([]byte, error)
   // RequestHandler() http.HandlerFunc
@@ -58,12 +58,12 @@ func (resource *RestResource) Type() string {
   return resource.ContentType
 }
 
-func (resource *RestResource) All() (int, interface{}) {
-  return 200, "TODO"
+func (resource *RestResource) All() RestfulResource {
+  return nil // TODO
 }
 
-func (resource *RestResource) ById(id int) (int, interface{}) {
-  return 200, "TODO"
+func (resource *RestResource) ById(id int) RestfulResource {
+  return nil // TODO
 }
 
 func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {
