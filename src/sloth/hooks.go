@@ -5,6 +5,7 @@ package sloth
 import (
   "fmt"
   "net/http"
+  "net/url"
   "database/sql"
   _ "github.com/go-sql-driver/mysql"
 )
@@ -15,7 +16,7 @@ var _ RestfulHook = (*RestHook)(nil)
 
 type RestfulHook interface {
   Ping()
-  Kill() // rename Unsubscribe?
+  Kill()
 }
 
 // TODO - make persistable
@@ -42,31 +43,46 @@ func (hook *RestHook) Kill() {
 
 // Hook resource
 
-var _ RestfulHookResource = (*RestHookResource)(nil)
+var _ HookableResource = (*HookResource)(nil)
 
-type RestfulHookResource interface {
+type HookableResource interface {
   RestfulResource
 
   Subscribe(subUrl string, subMethod string)
   Broadcast(data interface{})
 }
 
-type RestHookResource struct {
-  *RestResource
+type HookResource struct {
+  UrlSlug string
+
+  RestResource
 
   Hooks []RestHook
 }
 
-func (resource *RestHookResource) Subscribe(subUrl string, subMethod string) {
+func (resource *HookResource) Slug() string {
+  return resource.UrlSlug
+}
+
+func (resource *HookResource) Put(values url.Values) (int, interface{}) {
+  fmt.Println("SUBSCRIBE PUT", values, values["subscriber_url"])
+  resource.Subscribe(values["subscriber_url"][0], values["subscriber_method"][0])
+
+  return 200, "TODO"
+}
+
+func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
   newHook := RestHook {
     subscriberUrl    : subUrl,
     subscriberMethod : subMethod,
   }
 
   resource.Hooks = append(resource.Hooks, newHook)
+
+  fmt.Println("Successful subscription!", subUrl, subMethod)
 }
 
-func (resource *RestHookResource) Broadcast(data interface{}) {
+func (resource *HookResource) Broadcast(data interface{}) {
   for _, hook := range resource.Hooks {
     http.NewRequest(hook.subscriberMethod, hook.subscriberUrl, nil)
     

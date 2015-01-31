@@ -97,7 +97,7 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
     request.ParseForm()
     method := request.Method
     values := request.Form
- 
+
     switch method {
     case GET:
       stat, data = resource.Get(values)
