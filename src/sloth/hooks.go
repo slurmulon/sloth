@@ -53,9 +53,7 @@ type HookableResource interface {
 
 type HookResource struct {
   UrlSlug string
-
   RestResource
-
   Hooks []RestHook
 }
 
@@ -64,9 +62,7 @@ func (resource *HookResource) Slug() string {
 }
 
 func (resource *HookResource) Put(values url.Values) (int, interface{}) {
-  fmt.Println("SUBSCRIBE PUT", values, values["subscriber_url"])
   resource.Subscribe(values["subscriber_url"][0], values["subscriber_method"][0])
-
   return 200, "TODO"
 }
 
@@ -100,7 +96,6 @@ func (repo *HookRepo) Db() *sql.DB {
   db, err := sql.Open("mysql", "user:password@/hooks") // FIXME - integrate with config
 
   if err != nil {
-    // log.Fatal(err)
     fmt.Println("improve this error")
   }
 
