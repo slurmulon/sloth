@@ -138,6 +138,7 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
   }
 }
 
+// TODO - consider using http.Server instead to provide greater flexibility (handler in addition to read/write timeouts, header constraints, etc)
 func (service *RestService) AddResource(resource RestfulResource) {
   http.HandleFunc("/" + resource.Slug(), service.RequestHandler(resource))
 }

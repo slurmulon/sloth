@@ -4,6 +4,7 @@ package sloth
 
 import (
   "fmt"
+  "bytes"
   "net/http"
   "net/url"
   "database/sql"
@@ -15,7 +16,7 @@ import (
 var _ RestfulHook = (*RestHook)(nil)
 
 type RestfulHook interface {
-  Ping()
+  Mesg(interface{}) (*http.Response, error)
   Kill()
 }
 
@@ -32,8 +33,24 @@ func (hook *RestHook) Method() string {
   return hook.subscriberMethod
 }
 
-func (hook *RestHook) Ping() {
-  
+func (hook *RestHook) Mesg(data interface{}) (*http.Response, error) {
+  hookCaller   := &http.Client{}
+  dataBytes, _ := AsBytes(data)
+
+  req, err := http.NewRequest(hook.subscriberMethod, hook.subscriberUrl, bytes.NewBuffer(dataBytes))
+
+  if err != nil {
+    panic(err)
+  }
+
+  req.Header.Add("X-Sloth-Hook-Id",        `W/"something"`)
+  req.Header.Add("X-Sloth-Hook-Signature", `W/"abc123"`) // TODO - HMAC
+
+  resp, err := hookCaller.Do(req)
+
+  defer resp.Body.Close()
+
+  return resp, err
 }
 
 func (hook *RestHook) Kill() {
@@ -78,19 +95,15 @@ func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
 }
 
 func (resource *HookResource) Broadcast(data interface{}) {
+  // TODO - make this async / concurrent
   for _, hook := range resource.Hooks {
-    http.NewRequest(hook.subscriberMethod, hook.subscriberUrl, nil)
-    
-    // if err != nil {
-    //   // handle error
-    // }
+    hook.Mesg(data)
   }
 }
 
 // Hook repository
 
 type HookRepo struct { }
-// type HookDB sql.DB
 
 func (repo *HookRepo) Db() *sql.DB {
   db, err := sql.Open("mysql", "user:password@/hooks") // FIXME - integrate with config
