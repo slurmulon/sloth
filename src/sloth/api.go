@@ -14,13 +14,18 @@ const (
   GET    = "GET"
   POST   = "POST"
   PUT    = "PUT"
+  PATCH  = "PATCH"
   DELETE = "DELETE"
+  HEAD   = "HEAD"
 )
 
 func (resource *RestResource) Get(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented GET",    resource); return 405, "" }
 func (resource *RestResource) Put(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented PUT",    resource); return 405, "" }
 func (resource *RestResource) Post(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented POST",   resource); return 405, "" }
+func (resource *RestResource) Patch(values url.Values)  (int, interface{}) { fmt.Println("[WARN] Unimplemented PATCH",  resource); return 405, "" }
 func (resource *RestResource) Delete(values url.Values) (int, interface{}) { fmt.Println("[WARN] Unimplemented DELETE", resource); return 405, "" }
+// func (resource *RestResource) Head(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented HEAD",   resource); return 405, "" }
+
 
 // Resources
 
@@ -43,6 +48,7 @@ type RestfulResource interface {
   Get(values url.Values)    (int, interface{})
   Post(values url.Values)   (int, interface{})
   Put(values url.Values)    (int, interface{})
+  Patch(values url.Values)  (int, interface{})
   Delete(values url.Values) (int, interface{})
 }
 
@@ -105,6 +111,8 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
       stat, data = resource.Post(values)
     case PUT:
       stat, data = resource.Put(values)
+    case PATCH:
+      stat, data = resource.Patch(values)
     case DELETE:
       stat, data = resource.Delete(values)
     default:
