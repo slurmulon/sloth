@@ -106,13 +106,12 @@ func (repo *HookRepo) All() (*sql.Rows, error) {
   return repo.Db().Query("select id, subscriber_url, subscriber_method from hooks")
 }
 
-// TODO
-// func (repo *HookRepo) Add(hook *RestfulHook) {
-//   // repo.Db().Query("select id, subscriber_url, subscriber_method from hooks")
-// }
+func (repo *HookRepo) Add(hook *RestHook) (sql.Result, error) {
+  return repo.Db().Exec("insert into hooks (subscriber_url, subscriber_method) values (?, ?)", hook.subscriberUrl, hook.subscriberMethod) 
+}
 
-func (repo *HookRepo) Delete(hook *RestHook) {
-  repo.Db().Exec("delete from hooks where subscriber_url = ? and subscriber_method = ?", hook.subscriberUrl, hook.subscriberMethod)
+func (repo *HookRepo) Delete(hook *RestHook) (sql.Result, error) {
+  return repo.Db().Exec("delete from hooks where subscriber_url = ? and subscriber_method = ?", hook.subscriberUrl, hook.subscriberMethod)
 }
 
 func (repo *HookRepo) Close() {
