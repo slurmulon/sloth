@@ -95,10 +95,11 @@ func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
 }
 
 func (resource *HookResource) Broadcast(data interface{}) {
-  // TODO - make this async / concurrent
-  for _, hook := range resource.Hooks {
-    hook.Mesg(data)
-  }
+  go func() {
+    for _, hook := range resource.Hooks {
+      hook.Mesg(data)
+    }
+  }()
 }
 
 // Hook repository
