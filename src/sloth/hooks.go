@@ -6,6 +6,7 @@ import (
   "net/http"
   "net/url"
   "database/sql"
+  // "crypto/hmac"
   _ "github.com/go-sql-driver/mysql"
 )
 
@@ -97,11 +98,11 @@ func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
 }
 
 func (resource *HookResource) Broadcast(data interface{}) {
-  go func() {
-    for _, hook := range resource.Hooks() {
+  for _, hook := range resource.Hooks() {
+    go func() { // WARN - this can get a bit crazy if we have thousands of subscribers. need to make this scale.
       hook.Mesg(data)
-    }
-  }()
+    }()
+  }
 }
 
 // Hook repository
