@@ -1,5 +1,3 @@
-// http://golang.org/pkg/net/http/
-
 package sloth
 
 import (

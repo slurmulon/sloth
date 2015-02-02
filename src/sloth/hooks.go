@@ -1,5 +1,3 @@
-// TODO - hmac
-
 package sloth
 
 import (
@@ -94,7 +92,6 @@ func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
     subscriberMethod : subMethod,
   }
 
-  // resource.Add(newHook)
   new(HookRepo).Add(&newHook)
 
   fmt.Println("Successful subscription!", subUrl, subMethod)
