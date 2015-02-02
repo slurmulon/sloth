@@ -70,7 +70,10 @@ type HookableResource interface {
 type HookResource struct {
   UrlSlug string
   RestResource
-  // Hooks []RestHook // would be nice, but how can this be (easily/cleanly) consistent with sql?
+}
+
+func (resource *HookResource) Hooks() []RestHook {
+  return nil // TODO - call sql, get all hooks for resource
 }
 
 func (resource *HookResource) Slug() string {
@@ -80,10 +83,6 @@ func (resource *HookResource) Slug() string {
 func (resource *HookResource) Put(values url.Values) (int, interface{}) {
   resource.Subscribe(values["subscriber_url"][0], values["subscriber_method"][0])
   return 200, "FIXME"
-}
-
-func (resource *HookResource) Hooks() []RestHook {
-  return nil // TODO
 }
 
 func (resource *HookResource) Subscribe(subUrl string, subMethod string) {

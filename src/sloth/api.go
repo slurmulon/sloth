@@ -114,7 +114,7 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
     case DELETE:
       stat, data = resource.Delete(values)
     default:
-      service.AbortRequest(rw, 405)
+      service.AbortRequest(rw, 405) // FIXME - this kid of conflicts with umimplemented method defaults
       return
     }
 
