@@ -17,7 +17,7 @@ var _ RestfulHook = (*RestHook)(nil)
 
 type RestfulHook interface {
   Mesg(interface{}) (*http.Response, error)
-  Kill()
+  Kill() (sql.Result, error) 
 }
 
 type RestHook struct {
@@ -53,8 +53,8 @@ func (hook *RestHook) Mesg(data interface{}) (*http.Response, error) {
   return resp, err
 }
 
-func (hook *RestHook) Kill() {
-  
+func (hook *RestHook) Kill() (sql.Result, error) {
+  return new(HookRepo).Db().Exec("delete from hooks where subscriber_url = ? and subscriber_method = ?", hook.subscriberUrl, hook.subscriberMethod)
 }
 
 // Hook resource
@@ -64,6 +64,7 @@ var _ HookableResource = (*HookResource)(nil)
 type HookableResource interface {
   RestfulResource
 
+  Hooks() []RestHook
   Subscribe(subUrl string, subMethod string)
   Broadcast(data interface{})
 }
@@ -71,7 +72,7 @@ type HookableResource interface {
 type HookResource struct {
   UrlSlug string
   RestResource
-  Hooks []RestHook
+  // Hooks []RestHook // would be nice, but how can this be (easily/cleanly) consistent with sql?
 }
 
 func (resource *HookResource) Slug() string {
@@ -83,20 +84,25 @@ func (resource *HookResource) Put(values url.Values) (int, interface{}) {
   return 200, "FIXME"
 }
 
+func (resource *HookResource) Hooks() []RestHook {
+  return nil // TODO
+}
+
 func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
   newHook := RestHook {
     subscriberUrl    : subUrl,
     subscriberMethod : subMethod,
   }
 
-  resource.Hooks = append(resource.Hooks, newHook)
+  // resource.Add(newHook)
+  new(HookRepo).Add(&newHook)
 
   fmt.Println("Successful subscription!", subUrl, subMethod)
 }
 
 func (resource *HookResource) Broadcast(data interface{}) {
   go func() {
-    for _, hook := range resource.Hooks {
+    for _, hook := range resource.Hooks() {
       hook.Mesg(data)
     }
   }()
