@@ -93,7 +93,7 @@ func (resource *HookResource) Hooks() []RestHook {
       panic("Failed to parse RestHook from repository")
     }
 
-    newHook := RestHook{subscriberUrl: subscriberUrl, subscriberMethod: subscriberMethod}
+    newHook := RestHook{resourceSlug: resource.Slug(), subscriberUrl: subscriberUrl, subscriberMethod: subscriberMethod}
 
     parsedHooks = append(parsedHooks, newHook)
   }
@@ -150,7 +150,7 @@ func (repo *HookRepo) Db() *sql.DB {
 }
 
 func (repo *HookRepo) All() (*sql.Rows, error) {
-  return repo.Db().Query("select id, subscriber_url, subscriber_method from hooks")
+  return repo.Db().Query("select id, resource_slug, subscriber_url, subscriber_method from hooks")
 }
 
 func (repo *HookRepo) ForResource(resource *HookResource) (*sql.Rows, error) {
@@ -162,7 +162,7 @@ func (repo *HookRepo) Add(hook *RestHook) (sql.Result, error) {
 }
 
 func (repo *HookRepo) Delete(hook *RestHook) (sql.Result, error) {
-  return repo.Db().Exec("delete from hooks where subscriber_url = ? and subscriber_method = ?", hook.resourceSlug, hook.subscriberUrl, hook.subscriberMethod)
+  return repo.Db().Exec("delete from hooks where resource_slug = ? and subscriber_url = ? and subscriber_method = ?", hook.resourceSlug, hook.subscriberUrl, hook.subscriberMethod)
 }
 
 func (repo *HookRepo) Close() {
