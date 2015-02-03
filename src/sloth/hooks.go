@@ -20,6 +20,8 @@ type RestfulHook interface {
 }
 
 type RestHook struct {
+  id int
+  resourceSlug     string
   subscriberUrl    string
   subscriberMethod string
 }
@@ -74,7 +76,35 @@ type HookResource struct {
 }
 
 func (resource *HookResource) Hooks() []RestHook {
-  return nil // TODO - call sql, get all hooks for resource
+  var parsedHooks []RestHook
+
+  storedHooks, err := new(HookRepo).ForResource(resource)
+
+  defer storedHooks.Close()
+
+  for storedHooks.Next() {
+    var id  int
+    var subscriberUrl    string
+    var subscriberMethod string
+
+    err := storedHooks.Scan(&id, &subscriberUrl, &subscriberMethod)
+
+    if err != nil {
+      panic("Failed to parse RestHook from repository")
+    }
+
+    newHook := RestHook{subscriberUrl: subscriberUrl, subscriberMethod: subscriberMethod}
+
+    parsedHooks = append(parsedHooks, newHook)
+  }
+
+  err = storedHooks.Err()
+
+  if err != nil {
+    panic("Failed to acquire RestHooks from repository")
+  }
+
+  return parsedHooks
 }
 
 func (resource *HookResource) Slug() string {
@@ -99,7 +129,7 @@ func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
 
 func (resource *HookResource) Broadcast(data interface{}) {
   for _, hook := range resource.Hooks() {
-    go func() { // WARN - this can get a bit crazy if we have thousands of subscribers. need to make this scale.
+    go func() { // WARN - this can get a bit crazy if we have thousands of subscribers. need to make this scale properly
       hook.Mesg(data)
     }()
   }
@@ -123,12 +153,16 @@ func (repo *HookRepo) All() (*sql.Rows, error) {
   return repo.Db().Query("select id, subscriber_url, subscriber_method from hooks")
 }
 
+func (repo *HookRepo) ForResource(resource *HookResource) (*sql.Rows, error) {
+  return repo.Db().Query("select id, subscriber_url, subscriber_method from hooks where resource_slug = ?", resource.Slug())
+}
+
 func (repo *HookRepo) Add(hook *RestHook) (sql.Result, error) {
-  return repo.Db().Exec("insert into hooks (subscriber_url, subscriber_method) values (?, ?)", hook.subscriberUrl, hook.subscriberMethod) 
+  return repo.Db().Exec("insert into hooks (resource_slug, subscriber_url, subscriber_method) values (?, ?)", hook.resourceSlug, hook.subscriberUrl, hook.subscriberMethod) 
 }
 
 func (repo *HookRepo) Delete(hook *RestHook) (sql.Result, error) {
-  return repo.Db().Exec("delete from hooks where subscriber_url = ? and subscriber_method = ?", hook.subscriberUrl, hook.subscriberMethod)
+  return repo.Db().Exec("delete from hooks where subscriber_url = ? and subscriber_method = ?", hook.resourceSlug, hook.subscriberUrl, hook.subscriberMethod)
 }
 
 func (repo *HookRepo) Close() {
