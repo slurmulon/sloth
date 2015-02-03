@@ -140,7 +140,7 @@ func (resource *HookResource) Broadcast(data interface{}) {
 type HookRepo struct { }
 
 func (repo *HookRepo) Db() *sql.DB {
-  db, err := sql.Open("mysql", "user:password@/hooks") // FIXME - integrate with config
+  db, err := sql.Open("mysql", "user:password@/hooks") // FIXME - integrate with config (https://code.google.com/p/gcfg/)
 
   if err != nil {
     fmt.Println("improve this error")
