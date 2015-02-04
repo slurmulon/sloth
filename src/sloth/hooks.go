@@ -55,7 +55,7 @@ func (hook *RestHook) Mesg(data interface{}) (*http.Response, error) {
 }
 
 func (hook *RestHook) Kill() (sql.Result, error) {
-  return new(HookRepo).Db().Exec("delete from hooks where subscriber_url = ? and subscriber_method = ?", hook.subscriberUrl, hook.subscriberMethod)
+  return new(HookRepo).Db().Exec("delete from hooks where resource_slug = ? and subscriber_url = ? and subscriber_method = ?", hook.subscriberUrl, hook.subscriberMethod)
 }
 
 // Hook resource
