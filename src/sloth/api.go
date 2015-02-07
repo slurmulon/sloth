@@ -41,7 +41,7 @@ type RestfulResource interface {
   ById(string) RestfulResource
 
   MarshalContent(data interface{}) ([]byte, error)
-  // RequestHandler() http.HandlerFunc
+  // RequestHandler() http.HandlerFunc // TODO
 
   Get(values url.Values)    (int, interface{})
   Post(values url.Values)   (int, interface{})
@@ -114,7 +114,7 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
     case DELETE:
       stat, data = resource.Delete(values)
     default:
-      service.AbortRequest(rw, 405) // FIXME - this kid of conflicts with umimplemented method defaults
+      service.AbortRequest(rw, 405)
       return
     }
 
