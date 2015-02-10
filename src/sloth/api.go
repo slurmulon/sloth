@@ -22,7 +22,7 @@ func (resource *RestResource) Put(values url.Values)    (int, interface{}) { fmt
 func (resource *RestResource) Post(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented POST",   resource); return 405, "" }
 func (resource *RestResource) Patch(values url.Values)  (int, interface{}) { fmt.Println("[WARN] Unimplemented PATCH",  resource); return 405, "" }
 func (resource *RestResource) Delete(values url.Values) (int, interface{}) { fmt.Println("[WARN] Unimplemented DELETE", resource); return 405, "" }
-// func (resource *RestResource) Head(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented HEAD",   resource); return 405, "" }
+func (resource *RestResource) Head(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented HEAD",   resource); return 405, "" }
 
 
 // Resources
