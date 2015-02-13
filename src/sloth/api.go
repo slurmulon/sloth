@@ -63,11 +63,11 @@ func (resource *RestResource) Type() string {
 }
 
 func (resource *RestResource) All() RestfulResource {
-  return nil // TODO
+  return &RestResource { UrlSlug: resource.Slug() + "/", ContentType: resource.ContentType }
 }
 
 func (resource *RestResource) ById(id string) RestfulResource {
-  return &RestResource { UrlSlug: id, ContentType: resource.ContentType }
+  return &RestResource { UrlSlug: resource.Slug() + "/" + id, ContentType: resource.ContentType }
 }
 
 func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {

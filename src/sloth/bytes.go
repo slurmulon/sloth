@@ -12,7 +12,7 @@ func AsBytes(key interface{}) ([]byte, error) {
   err := enc.Encode(key)
 
   if err != nil {
-      return nil, err
+    return nil, err
   }
   
   return buf.Bytes(), nil

@@ -111,6 +111,7 @@ func (resource *HookResource) Slug() string {
   return resource.UrlSlug
 }
 
+// FIXME
 func (resource *HookResource) Put(values url.Values) (int, interface{}) {
   resource.Subscribe(values["subscriber_url"][0], values["subscriber_method"][0])
   return 200, "FIXME"
