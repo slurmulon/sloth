@@ -1,7 +1,7 @@
 package sloth
 
 import (
-  "fmt"
+  "log"
   "net/http"
   "net/url"
 )
@@ -17,21 +17,17 @@ const (
   HEAD   = "HEAD"
 )
 
-func (resource *RestResource) Get(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented GET",    resource); return 405, "" }
-func (resource *RestResource) Put(values url.Values)    (int, interface{}) { fmt.Println("[WARN] Unimplemented PUT",    resource); return 405, "" }
-func (resource *RestResource) Post(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented POST",   resource); return 405, "" }
-func (resource *RestResource) Patch(values url.Values)  (int, interface{}) { fmt.Println("[WARN] Unimplemented PATCH",  resource); return 405, "" }
-func (resource *RestResource) Delete(values url.Values) (int, interface{}) { fmt.Println("[WARN] Unimplemented DELETE", resource); return 405, "" }
-func (resource *RestResource) Head(values url.Values)   (int, interface{}) { fmt.Println("[WARN] Unimplemented HEAD",   resource); return 405, "" }
+func (resource *RestResource) Get(values url.Values)    (int, interface{}) { log.Println("[WARN] Unimplemented GET",    resource); return 405, "" }
+func (resource *RestResource) Put(values url.Values)    (int, interface{}) { log.Println("[WARN] Unimplemented PUT",    resource); return 405, "" }
+func (resource *RestResource) Post(values url.Values)   (int, interface{}) { log.Println("[WARN] Unimplemented POST",   resource); return 405, "" }
+func (resource *RestResource) Patch(values url.Values)  (int, interface{}) { log.Println("[WARN] Unimplemented PATCH",  resource); return 405, "" }
+func (resource *RestResource) Delete(values url.Values) (int, interface{}) { log.Println("[WARN] Unimplemented DELETE", resource); return 405, "" }
+func (resource *RestResource) Head(values url.Values)   (int, interface{}) { log.Println("[WARN] Unimplemented HEAD",   resource); return 405, "" }
 
 
 // Resources
 
 var _ RestfulResource = (*RestResource)(nil)
-
-type RestError interface {
-  Error() string
-}
 
 type RestfulResource interface {
   Slug() string
@@ -93,6 +89,7 @@ func (service *RestService) MarshalContent(data interface{}) ([]byte, error) {
   return AsBytes(data)
 }
 
+// TODO - custom headers, ETags
 func (service *RestService) RequestHandler(resource RestfulResource) http.HandlerFunc {
   return func(rw http.ResponseWriter, request *http.Request) {
     var data interface{}

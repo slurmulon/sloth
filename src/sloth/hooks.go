@@ -115,6 +115,8 @@ func (resource *HookResource) Slug() string {
   return resource.UrlSlug
 }
 
+// TODO - validate pre-existing subscriptions
+// TODO - allow subscriber to provide HMAC key
 func (resource *HookResource) Put(values url.Values) (int, interface{}) {
   subscriberUrl, subUrlOk       := values["subscriber_url"]
   subscriberMethod, subMethodOk := values["subscriber_method"]
@@ -131,6 +133,7 @@ func (resource *HookResource) Put(values url.Values) (int, interface{}) {
    return 204, ""
 }
 
+// TODO - generate key
 func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
   newHook := RestHook {
     subscriberUrl    : subUrl,
