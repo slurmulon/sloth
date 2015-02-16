@@ -20,7 +20,7 @@ type JsonResource struct {
 func (*JsonService) MarshalContent(data interface{}) ([]byte, error) {
   return json.Marshal(data)
 }
-
+ 
 func (*JsonService) Type() string {
   return "application/json"
 }

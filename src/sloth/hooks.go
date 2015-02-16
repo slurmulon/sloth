@@ -1,7 +1,7 @@
 package sloth
 
 import (
-  "fmt"
+  "log"
   "bytes"
   "net/http"
   "net/url"
@@ -75,6 +75,10 @@ type HookResource struct {
   RestResource
 }
 
+func (*HookResource) Type() string {
+  return "text/html"
+}
+
 func (resource *HookResource) Hooks() []RestHook {
   var parsedHooks []RestHook
 
@@ -113,8 +117,19 @@ func (resource *HookResource) Slug() string {
 
 // FIXME
 func (resource *HookResource) Put(values url.Values) (int, interface{}) {
-  resource.Subscribe(values["subscriber_url"][0], values["subscriber_method"][0])
-  return 200, "FIXME"
+  subscriberUrl, subUrlOk       := values["subscriber_url"]
+  subscriberMethod, subMethodOk := values["subscriber_method"]
+
+  if !subUrlOk || !subMethodOk {
+    return 400, "Missing subscriber_url and/or subscriber_method"
+  }
+
+  switch subscriberMethod[0] {
+    case GET, POST, PUT, PATCH, DELETE: resource.Subscribe(subscriberUrl[0], subscriberMethod[0])
+    default: return 400, "Unsupported subscriber_method"
+  }
+
+   return 204, ""
 }
 
 func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
@@ -125,7 +140,7 @@ func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
 
   new(HookRepo).Add(&newHook)
 
-  fmt.Println("Successful subscription!", subUrl, subMethod)
+  log.Printf("Successful subscription (subUrl: %s, subMethod: %s)", subUrl, subMethod)
 }
 
 func (resource *HookResource) Broadcast(data interface{}) {
@@ -144,7 +159,7 @@ func (repo *HookRepo) Db() *sql.DB {
   db, err := sql.Open("mysql", "user:password@/hooks") // FIXME - integrate with config (https://code.google.com/p/gcfg/)
 
   if err != nil {
-    fmt.Println("improve this error")
+    log.Fatal("Failed to instantiate hook repository", err)
   }
 
   return db
