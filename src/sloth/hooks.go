@@ -87,7 +87,7 @@ func (resource *HookResource) Hooks() []RestHook {
   defer storedHooks.Close()
 
   for storedHooks.Next() {
-    var id  int
+    var id  string
     var subscriberUrl    string
     var subscriberMethod string
 
@@ -115,7 +115,6 @@ func (resource *HookResource) Slug() string {
   return resource.UrlSlug
 }
 
-// FIXME
 func (resource *HookResource) Put(values url.Values) (int, interface{}) {
   subscriberUrl, subUrlOk       := values["subscriber_url"]
   subscriberMethod, subMethodOk := values["subscriber_method"]
