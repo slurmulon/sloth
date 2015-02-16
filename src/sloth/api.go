@@ -1,6 +1,7 @@
 package sloth
 
 import (
+  "fmt"
   "log"
   "net/http"
   "net/url"
@@ -141,7 +142,7 @@ func (service *RestService) AddResource(resource RestfulResource) {
 func (service *RestService) Start() {
   portStr := fmt.Sprintf(":%d", service.Port)
 
-  fmt.Println("Binding to port ", portStr)
+  log.Println("Binding to port ", portStr)
 
   http.ListenAndServe(portStr, nil)
 }
