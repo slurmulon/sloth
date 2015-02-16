@@ -20,7 +20,7 @@ type RestfulHook interface {
 }
 
 type RestHook struct {
-  id int
+  id string
   resourceSlug     string
   subscriberUrl    string
   subscriberMethod string
@@ -44,7 +44,7 @@ func (hook *RestHook) Mesg(data interface{}) (*http.Response, error) {
     panic(err)
   }
 
-  req.Header.Add("X-Sloth-Hook-Id",        `W/"something"`)
+  req.Header.Add("X-Sloth-Hook-Id",        `W/"` + hook.id + `"`)
   req.Header.Add("X-Sloth-Hook-Signature", `W/"abc123"`) // TODO - HMAC
 
   resp, err := hookCaller.Do(req)
