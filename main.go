@@ -4,7 +4,6 @@ import (
   "fmt"
   "sloth"
   "net/url"
-  // "database/sql"
 )
 
 // Basic text resource
@@ -45,7 +44,7 @@ func main() {
 
   slothRestService.AddResource(&slothTextResource) // http://localhost:3000/hello
   slothRestService.AddResource(&slothJsonResource) // http://localhost:3000/json
-  slothRestService.AddResource(&slothHookResource) // http://localhost:3000/hook
+  slothRestService.AddResource(&slothHookResource) // http://localhost:3000/hook - automatically supports subscriptions via PUT
 
   slothRestService.Start()
 }
