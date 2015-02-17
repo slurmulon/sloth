@@ -3,6 +3,7 @@ package sloth
 import (
   "log"
   "bytes"
+  "runtime"
   "net/http"
   "net/url"
   "database/sql"
@@ -146,9 +147,17 @@ func (resource *HookResource) Subscribe(subUrl string, subMethod string) {
 }
 
 func (resource *HookResource) Broadcast(data interface{}) {
-  for _, hook := range resource.Hooks() {
-    go func() { // WARN - this can get a bit crazy if we have thousands of subscribers. need to make this scale properly
-      hook.Mesg(data)
+  allHooks := resource.Hooks()
+  numCores := runtime.NumCPU()
+  coreChan := make(chan int, numCores)
+
+  for _, hook := range allHooks {
+    coreChan <- 1
+
+    go func() {
+      hook.Mesg(&data)
+
+      <- coreChan
     }()
   }
 }
