@@ -38,6 +38,7 @@ type RestfulResource interface {
   ById(string) RestfulResource
 
   MarshalContent(data interface{}) ([]byte, error)
+  HeaderHandler(headers http.Header) (http.Header, error)
   // RequestHandler() http.HandlerFunc // TODO
 
   Get(values url.Values)    (int, interface{})
@@ -71,6 +72,10 @@ func (resource *RestResource) MarshalContent(data interface{}) ([]byte, error) {
   return AsBytes(data)
 }
 
+func (resource *RestResource) HeaderHandler(header http.Header) (http.Header, error) {
+  return header, nil
+}
+
 // type RestRequestInterceptor func(int, interface{})
 
 // Services
@@ -97,8 +102,9 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
     var stat int
 
     request.ParseForm()
-    method := request.Method
-    values := request.Form
+    method  := request.Method
+    values  := request.Form
+    headers := rw.Header()
 
     switch method {
     case GET:
@@ -116,17 +122,15 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
       return
     }
 
-    // request filter TODO
-    // requestInterceptor
+    content, contentErr := resource.MarshalContent(data)
+    headers, headerErr  := resource.HeaderHandler(headers)
 
-    content, err := resource.MarshalContent(data)
-
-    if err != nil {
+    if contentErr != nil || headerErr != nil {
       service.AbortRequest(rw, 500)
     }
 
     if resource.Type() != "" {
-      rw.Header().Set("Content-Type", resource.Type())
+      headers.Set("Content-Type", resource.Type())
     }
 
     rw.WriteHeader(stat)
