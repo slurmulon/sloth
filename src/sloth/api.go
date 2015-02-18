@@ -122,15 +122,15 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
       return
     }
 
+    if resource.Type() != "" {
+      headers.Set("Content-Type", resource.Type())
+    }
+
     content, contentErr := resource.MarshalContent(data)
     headers, headerErr  := resource.HeaderHandler(headers)
 
     if contentErr != nil || headerErr != nil {
       service.AbortRequest(rw, 500)
-    }
-
-    if resource.Type() != "" {
-      headers.Set("Content-Type", resource.Type())
     }
 
     rw.WriteHeader(stat)
