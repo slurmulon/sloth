@@ -39,7 +39,8 @@ type RestfulResource interface {
 
   MarshalContent(data interface{}) ([]byte, error)
   HeaderHandler(headers http.Header) (http.Header, error)
-  // RequestHandler() http.HandlerFunc // TODO
+  RequestHandler() http.HandlerFunc
+  AbortRequest(rw http.ResponseWriter, statusCode int)
 
   Get(values url.Values)    (int, interface{})
   Post(values url.Values)   (int, interface{})
@@ -76,32 +77,13 @@ func (resource *RestResource) HeaderHandler(header http.Header) (http.Header, er
   return header, nil
 }
 
-// type RestRequestInterceptor func(int, interface{})
-
-// Services
-
-var _ RestfulService = (*RestService)(nil)
-
-type RestfulService interface {
-  MarshalContent(data interface{}) ([]byte, error)
-  RequestHandler(resource RestfulResource) http.HandlerFunc
-}
-
-type RestService struct {
-  Port int
-}
-
-func (service *RestService) MarshalContent(data interface{}) ([]byte, error) {
-  return AsBytes(data)
-}
-
-// TODO - custom headers, ETags
-func (service *RestService) RequestHandler(resource RestfulResource) http.HandlerFunc {
+func (resource *RestResource) RequestHandler() http.HandlerFunc {
   return func(rw http.ResponseWriter, request *http.Request) {
     var data interface{}
     var stat int
 
     request.ParseForm()
+
     method  := request.Method
     values  := request.Form
     headers := rw.Header()
@@ -118,19 +100,19 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
     case DELETE:
       stat, data = resource.Delete(values)
     default:
-      service.AbortRequest(rw, 405)
+      resource.AbortRequest(rw, 405)
       return
-    }
-
-    content, contentErr := resource.MarshalContent(data)
-    headers, headerErr  := resource.HeaderHandler(headers)
-
-    if contentErr != nil || headerErr != nil {
-      service.AbortRequest(rw, 500)
     }
 
     if resource.Type() != "" {
       headers.Set("Content-Type", resource.Type())
+    }
+
+    content, contentErr := resource.MarshalContent(data)
+    headers, headersErr := resource.HeaderHandler(headers)
+   
+    if contentErr != nil || headersErr != nil { // TODO - useful logs
+      resource.AbortRequest(rw, 500)
     }
 
     rw.WriteHeader(stat)
@@ -138,9 +120,49 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
   }
 }
 
+func (resource *RestResource) AbortRequest(rw http.ResponseWriter, statusCode int) {
+  rw.WriteHeader(statusCode)
+}
+
+// Services
+
+var _ RestfulService = (*RestService)(nil)
+
+type RestfulService interface {
+  // MarshalContent(data interface{}) ([]byte, error)
+  HeaderHandler(header http.Header) (http.Header, error)
+  RequestHandler(resource RestfulResource) http.HandlerFunc
+}
+
+type RestService struct {
+  Port int
+}
+
+func (service *RestService) MarshalContent(data interface{}) ([]byte, error) {
+  return AsBytes(data)
+}
+
+func (service *RestService) HeaderHandler(header http.Header) (http.Header, error) {
+  return header, nil
+}
+
+func (service *RestService) RequestHandler(resource RestfulResource) http.HandlerFunc {
+  return func(rw http.ResponseWriter, request *http.Request) {
+    headers      := rw.Header()
+    headers, err := service.HeaderHandler(headers)
+
+    if err != nil { // TODO - useful logs
+      resource.AbortRequest(rw, 500)
+    }
+
+    resource.RequestHandler()(rw, request)
+  }
+}
+
 // TODO - consider using http.Server instead to provide greater flexibility (handler in addition to read/write timeouts, header constraints, etc)
 func (service *RestService) AddResource(resource RestfulResource) {
-  http.HandleFunc("/" + resource.Slug(), service.RequestHandler(resource))
+  // http.HandleFunc("/" + resource.Slug(), service.RequestHandler(resource))
+  http.HandleFunc("/" + resource.Slug(), resource.RequestHandler())
 }
 
 func (service *RestService) Start() {
@@ -149,8 +171,4 @@ func (service *RestService) Start() {
   log.Println("Binding to port ", portStr)
 
   http.ListenAndServe(portStr, nil)
-}
-
-func (service *RestService) AbortRequest(rw http.ResponseWriter, statusCode int) {
-  rw.WriteHeader(statusCode)
 }
