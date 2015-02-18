@@ -127,9 +127,9 @@ func (service *RestService) RequestHandler(resource RestfulResource) http.Handle
     }
 
     content, contentErr := resource.MarshalContent(data)
-    headers, headerErr  := resource.HeaderHandler(headers)
+    headers, headersErr := resource.HeaderHandler(headers)
 
-    if contentErr != nil || headerErr != nil {
+    if contentErr != nil || headersErr != nil {
       service.AbortRequest(rw, 500)
     }
 
