@@ -95,7 +95,7 @@ func (resource *HookResource) Hooks() []RestHook {
     err := storedHooks.Scan(&id, &subscriberUrl, &subscriberMethod)
 
     if err != nil {
-      panic("Failed to parse RestHook from repository")
+      panic(err)
     }
 
     newHook := RestHook{resourceSlug: resource.Slug(), subscriberUrl: subscriberUrl, subscriberMethod: subscriberMethod}
@@ -106,7 +106,7 @@ func (resource *HookResource) Hooks() []RestHook {
   err = storedHooks.Err()
 
   if err != nil {
-    panic("Failed to acquire RestHooks from repository")
+    panic(err)
   }
 
   return parsedHooks
