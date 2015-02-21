@@ -1,5 +1,5 @@
 # Sloth
-RESTful Web API library with support for Webhooks in Go
+RESTful Web API library with support for Resthooks in Go
 
 Based on: http://dougblack.io/words/a-restful-micro-framework-in-go.html
 
@@ -57,10 +57,21 @@ func main() {
 
   slothRestService.AddResource(&slothTextResource) // http://localhost:3000/hello
   slothRestService.AddResource(&slothJsonResource) // http://localhost:3000/json
-  slothRestService.AddResource(&slothHookResource) // http://localhost:3000/hook - automatically supports subscriptions via PUT
+  slothRestService.AddResource(&slothHookResource) // http://localhost:3000/hook - automatically supports content subscriptions via PUT
 
   slothRestService.Start()
 }
 
 
 ```
+
+## TODO
+
+[ ] Unit tests
+[ ] Resource-level request handlers
+[ ] Statically-typed Content-Types
+[ ] httprouter
+[ ] Redirects
+[ ] Static assets
+[ ] E-Tags
+[ ] HMAC
