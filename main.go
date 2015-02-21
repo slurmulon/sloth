@@ -34,6 +34,10 @@ type FooHook struct {
   sloth.HookResource
 }
 
+func (hook *FooHook) NotifyHello() {
+  hook.Broadcast("hello world!") // sends message to all hook subscribers
+}
+
 func main() {
   fmt.Println("Sloth - Restful APIs in Go")
 

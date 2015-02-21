@@ -49,7 +49,13 @@ type FooHook struct {
   sloth.HookResource
 }
 
+func (hook *FooHook) NotifyHello() {
+  hook.Broadcast("hello world!") // sends message to all hook subscribers
+}
+
 func main() {
+  fmt.Println("Sloth - Restful APIs in Go")
+
   slothTextResource := FooText{ sloth.RestResource{ UrlSlug: "hello", ContentType: "text/html; charset=utf8" } }
   slothJsonResource := FooJson{ sloth.JsonResource{ UrlSlug: "json" } }
   slothHookResource := FooHook{ sloth.HookResource{ UrlSlug: "hook" } }
@@ -57,21 +63,19 @@ func main() {
 
   slothRestService.AddResource(&slothTextResource) // http://localhost:3000/hello
   slothRestService.AddResource(&slothJsonResource) // http://localhost:3000/json
-  slothRestService.AddResource(&slothHookResource) // http://localhost:3000/hook - automatically supports content subscriptions via PUT
+  slothRestService.AddResource(&slothHookResource) // http://localhost:3000/hook - automatically supports subscriptions via PUT
 
   slothRestService.Start()
 }
-
-
 ```
 
 ## TODO
 
-[ ] Unit tests
-[ ] Resource-level request handlers
-[ ] Statically-typed Content-Types
-[ ] httprouter
-[ ] Redirects
-[ ] Static assets
-[ ] E-Tags
-[ ] HMAC
+- [ ] Unit tests
+- [ ] Resource-level request handlers
+- [ ] Statically-typed Content-Types
+- [ ] httprouter
+- [ ] Redirects
+- [ ] Static assets
+- [ ] E-Tags
+- [ ] HMAC
