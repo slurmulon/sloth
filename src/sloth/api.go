@@ -2,9 +2,9 @@ package sloth
 
 import (
   "fmt"
-  "log"
   "net/http"
   "net/url"
+  "github.com/golang/glog"
 )
 
 // Methods
@@ -18,12 +18,12 @@ const (
   HEAD   = "HEAD"
 )
 
-func (resource *RestResource) Get(values url.Values)    (int, interface{}) { log.Println("[WARN] Unimplemented GET",    resource); return 405, "" }
-func (resource *RestResource) Put(values url.Values)    (int, interface{}) { log.Println("[WARN] Unimplemented PUT",    resource); return 405, "" }
-func (resource *RestResource) Post(values url.Values)   (int, interface{}) { log.Println("[WARN] Unimplemented POST",   resource); return 405, "" }
-func (resource *RestResource) Patch(values url.Values)  (int, interface{}) { log.Println("[WARN] Unimplemented PATCH",  resource); return 405, "" }
-func (resource *RestResource) Delete(values url.Values) (int, interface{}) { log.Println("[WARN] Unimplemented DELETE", resource); return 405, "" }
-func (resource *RestResource) Head(values url.Values)   (int, interface{}) { log.Println("[WARN] Unimplemented HEAD",   resource); return 405, "" }
+func (resource *RestResource) Get(values url.Values)    (int, interface{}) { glog.Warning("[WARN] Unimplemented GET",    resource); return 405, "" }
+func (resource *RestResource) Put(values url.Values)    (int, interface{}) { glog.Warning("[WARN] Unimplemented PUT",    resource); return 405, "" }
+func (resource *RestResource) Post(values url.Values)   (int, interface{}) { glog.Warning("[WARN] Unimplemented POST",   resource); return 405, "" }
+func (resource *RestResource) Patch(values url.Values)  (int, interface{}) { glog.Warning("[WARN] Unimplemented PATCH",  resource); return 405, "" }
+func (resource *RestResource) Delete(values url.Values) (int, interface{}) { glog.Warning("[WARN] Unimplemented DELETE", resource); return 405, "" }
+func (resource *RestResource) Head(values url.Values)   (int, interface{}) { glog.Warning("[WARN] Unimplemented HEAD",   resource); return 405, "" }
 
 
 // Resources
@@ -146,7 +146,7 @@ func (service *RestService) AddResource(resource RestfulResource) {
 func (service *RestService) Start() {
   portStr := fmt.Sprintf(":%d", service.Port)
 
-  log.Println("Binding to port ", portStr)
+  glog.Info("Binding to port ", portStr)
 
   http.ListenAndServe(portStr, nil)
 }

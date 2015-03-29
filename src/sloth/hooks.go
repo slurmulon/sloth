@@ -127,8 +127,10 @@ func (resource *HookResource) Put(values url.Values) (int, interface{}) {
   }
 
   switch subscriberMethod[0] {
-    case GET, POST, PUT, PATCH, DELETE: resource.Subscribe(subscriberUrl[0], subscriberMethod[0])
-    default: return 400, "Unsupported subscriber_method"
+    case GET, POST, PUT, PATCH, DELETE:
+      resource.Subscribe(subscriberUrl[0], subscriberMethod[0])
+    default:
+      return 400, "Unsupported subscriber_method"
   }
 
    return 204, ""
@@ -156,7 +158,6 @@ func (resource *HookResource) Broadcast(data interface{}) {
 
     go func() {
       hook.Mesg(&data)
-
       <- coreChan
     }()
   }

@@ -79,3 +79,4 @@ func main() {
 - [ ] Static assets
 - [ ] E-Tags
 - [ ] HMAC
+- [ ] Hypermedia (links and rels)
