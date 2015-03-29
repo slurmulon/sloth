@@ -46,7 +46,7 @@ func (hook *RestHook) Mesg(data interface{}) (*http.Response, error) {
   }
 
   req.Header.Add("X-Sloth-Hook-Id",        `W/"` + hook.id + `"`)
-  req.Header.Add("X-Sloth-Hook-Signature", `W/"abc123"`) // TODO - HMAC
+  req.Header.Add("X-Sloth-Hook-Signature", `W/"TODO"`) // TODO - HMAC
 
   resp, err := hookCaller.Do(req)
 

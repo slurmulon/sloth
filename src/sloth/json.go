@@ -5,7 +5,7 @@ import (
 )
 
 // Ensures type checking during json marshalling
-// var _ json.Marshaler = (*RawMessage)(nil)
+var _ json.Marshaler = (*json.RawMessage)(nil)
 
 type JsonService struct {
   RestService
